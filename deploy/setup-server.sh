@@ -23,6 +23,7 @@ apt-get install -y nginx
 apt-get install -y certbot python3-certbot-nginx
 
 # ── 6. UFW firewall ──────────────────────────────────────────────────────────
+apt-get install -y ufw
 ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 443/tcp
