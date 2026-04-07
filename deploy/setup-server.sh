@@ -29,7 +29,8 @@ ufw allow 80/tcp
 ufw allow 443/tcp
 ufw --force enable
 
-# ── 7. Create /var/www ───────────────────────────────────────────────────────
+# ── 7. Install git + create /var/www ─────────────────────────────────────────
+apt-get install -y git
 mkdir -p /var/www
 
 # ── 8. Clone repo (idempotent) ───────────────────────────────────────────────
