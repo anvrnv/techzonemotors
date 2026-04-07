@@ -1,3 +1,5 @@
+import { prisma } from "@/lib/prisma";
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
@@ -46,8 +48,13 @@ export async function POST(request: Request) {
       );
     }
 
+    await prisma.lead.create({
+      data: { name: name.trim(), phone: phone.trim() },
+    });
+
     return Response.json({ ok: true }, { status: 200 });
-  } catch {
+  } catch (err) {
+    console.error("Contact route error:", err);
     return Response.json(
       { error: "Ошибка отправки в Telegram" },
       { status: 502 }

@@ -22,5 +22,6 @@ jobs:
             cd /var/www/techzonemotors
             git pull origin main
             npm install --production=false
+            npx prisma db push
             npm run build
             pm2 reload techzonemotors --update-env
