@@ -1,8 +1,11 @@
 #!/bin/bash
 set -e
 
+# Prevent all interactive dialogs during apt operations
+export DEBIAN_FRONTEND=noninteractive
+
 # ── 1. System update ──────────────────────────────────────────────────────────
-apt-get update && apt-get upgrade -y
+apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confkeep"
 
 # ── 2. Node.js 20 install (idempotent) ───────────────────────────────────────
 if ! node --version 2>/dev/null | grep -q "^v20"; then
