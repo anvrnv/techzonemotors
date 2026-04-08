@@ -10,6 +10,17 @@ You do not plan, implement, or debug yourself. You delegate, collect outputs, pa
 
 ---
 
+## Step 0 — Read project documentation (mandatory for non-trivial tasks)
+
+Before invoking the **Planner**, ensure the pipeline has current repo context:
+
+1. Instruct the **Planner** (and, when relevant, the **Implementer**) to read **`docs/AGENT_PROJECT_CHRONICLE.md`** first — file map, stack, env names, and data flows.
+2. For deployment, secrets, or VPS/GitHub Actions work, also use **`docs/PROJECT_ADMIN.md`** (Russian).
+
+After **meaningful code changes** land, follow **`.cursor/rules/chronicler-doc-update.mdc`**: run a separate **Task** subagent (`generalPurpose`) guided by **`.cursor/agents/chronicler.md`** to keep `docs/AGENT_PROJECT_CHRONICLE.md` in sync.
+
+---
+
 ## Pipeline
 
 ```
