@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { dispatchOpenContactModal } from "@/lib/contact-modal";
+
 interface Product {
   id: number;
   name: string;
@@ -281,7 +283,7 @@ export default function SvoPage() {
   const closeModal = () => setSelected(null);
   const openContactModal = () => {
     closeModal();
-    window.dispatchEvent(new CustomEvent("open-contact-modal"));
+    dispatchOpenContactModal();
   };
 
   return (
@@ -304,9 +306,7 @@ export default function SvoPage() {
             </p>
           </div>
           <button
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent("open-contact-modal"))
-            }
+            onClick={() => dispatchOpenContactModal()}
             className="shrink-0 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all active:scale-95"
           >
             Узнать подробнее

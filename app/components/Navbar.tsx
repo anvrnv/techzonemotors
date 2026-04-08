@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
+import { dispatchOpenContactModal } from "@/lib/contact-modal";
+
 const cities = ["Москва", "Петрозаводск"];
 
-const openContact = () =>
-  window.dispatchEvent(new CustomEvent("open-contact-modal"));
+const openContact = () => dispatchOpenContactModal();
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);

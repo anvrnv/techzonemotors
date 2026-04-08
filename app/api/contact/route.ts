@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
 
-export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
+type ContactJsonBody = {
+  name?: string;
+  phone?: string;
+};
 
-  const name: string = body?.name ?? "";
-  const phone: string = body?.phone ?? "";
+export async function POST(request: Request) {
+  const body = (await request.json().catch(() => null)) as ContactJsonBody | null;
+
+  const name = body?.name ?? "";
+  const phone = body?.phone ?? "";
 
   if (!name.trim() || !phone.trim()) {
     return Response.json({ error: "Заполните все поля" }, { status: 400 });

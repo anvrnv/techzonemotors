@@ -1,18 +1,9 @@
-"use client";
+import HomeClient from "./HomeClient";
+import { getCatalogProducts } from "@/lib/products";
 
-import ProductCarousel from "./components/ProductCarousel";
-import ReviewsGrid from "./components/ReviewsGrid";
-import Footer from "./components/Footer";
+export const revalidate = 60;
 
-export default function Home() {
-  const openModal = () =>
-    window.dispatchEvent(new CustomEvent("open-contact-modal"));
-
-  return (
-    <div className="bg-[#111111] flex flex-col min-h-screen">
-      <ProductCarousel onBuyClick={openModal} />
-      <ReviewsGrid />
-      <Footer />
-    </div>
-  );
+export default async function Home() {
+  const products = await getCatalogProducts();
+  return <HomeClient products={products} />;
 }

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
+import { OPEN_CONTACT_MODAL_EVENT } from "@/lib/contact-modal";
+
 import ContactModal from "./ContactModal";
 
 export default function GlobalContactModal() {
@@ -8,8 +11,8 @@ export default function GlobalContactModal() {
 
   useEffect(() => {
     const handler = () => setIsOpen(true);
-    window.addEventListener("open-contact-modal", handler);
-    return () => window.removeEventListener("open-contact-modal", handler);
+    window.addEventListener(OPEN_CONTACT_MODAL_EVENT, handler);
+    return () => window.removeEventListener(OPEN_CONTACT_MODAL_EVENT, handler);
   }, []);
 
   return <ContactModal isOpen={isOpen} onClose={() => setIsOpen(false)} />;
