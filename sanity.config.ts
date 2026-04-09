@@ -11,5 +11,21 @@ export default defineConfig({
   projectId: resolveProjectIdForSanityTools(),
   dataset,
   schema: { types: schemaTypes },
-  plugins: [structureTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Контент")
+          .items([
+            S.listItem()
+              .title("Каталог товаров")
+              .child(S.documentTypeList("product").title("Каталог товаров")),
+            S.listItem()
+              .title("Техника для СВО")
+              .child(
+                S.documentTypeList("svoProduct").title("Техника для СВО"),
+              ),
+          ]),
+    }),
+  ],
 });

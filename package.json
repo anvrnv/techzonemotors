@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "sanity:seed-catalog": "tsx --tsconfig tsconfig.json scripts/seed-sanity-catalog.ts"
+    "sanity:seed-catalog": "tsx --tsconfig tsconfig.json scripts/seed-sanity-catalog.ts",
+    "sanity:seed-svo": "tsx --tsconfig tsconfig.json scripts/seed-sanity-svo.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7",

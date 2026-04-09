@@ -19,6 +19,7 @@ flowchart LR
 
 - **Фронт и API** — одно приложение Next.js.
 - **Каталог** — чтение документов `product` из Sanity; при отсутствии проекта/сети используется локальный fallback (`lib/products-fallback.ts`).
+- **Страница СВО (`/svo`)** — документы `svoProduct` из Sanity; fallback — `lib/svo-products-fallback.ts`.
 - **Заявка (контакты)** — `POST /api/contact`: отправка сообщения в Telegram, затем запись лида в БД (`Lead`).
 - **CMS** — встроенная Sanity Studio по пути `/studio` (`next-sanity`).
 
@@ -74,7 +75,7 @@ flowchart LR
 ### Sanity (sanity.io)
 
 - Аккаунт/проект Sanity, **Project ID** и **Dataset**.
-- **CORS** и **токены**: по документации Sanity для вашего плана; write token — для `scripts/seed-sanity-catalog.ts` и аналогичных операций.
+- **CORS** и **токены**: по документации Sanity для вашего плана; write token — для `scripts/seed-sanity-catalog.ts`, `scripts/seed-sanity-svo.ts` и аналогичных операций.
 
 ### PostgreSQL
 
@@ -165,6 +166,7 @@ pm2 reload techzonemotors --update-env
 | Локальная разработка | `npm run dev` |
 | Сборка | `npm run build` (включает `prisma generate`) |
 | Заливка тестового каталога в Sanity | `npm run sanity:seed-catalog` (нужен `.env.local` и write token) |
+| Заливка тестовых позиций СВО в Sanity | `npm run sanity:seed-svo` (те же требования к `.env.local` и write token) |
 | Логи PM2 на сервере | `pm2 logs techzonemotors` |
 | Перезапуск после смены `.env.local` | `pm2 restart techzonemotors` или `pm2 reload …` как в CI |
 
