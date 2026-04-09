@@ -18,6 +18,14 @@ export default defineConfig({
           .title("Контент")
           .items([
             S.listItem()
+              .title("Карусель главной")
+              .child(
+                S.document()
+                  .schemaType("homeCarouselSettings")
+                  .documentId("homeCarouselSettings")
+                  .title("Карусель главной"),
+              ),
+            S.listItem()
               .title("Каталог товаров")
               .child(S.documentTypeList("product").title("Каталог товаров")),
             S.listItem()

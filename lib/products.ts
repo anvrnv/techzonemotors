@@ -6,7 +6,7 @@ import { urlForImage } from "@/lib/sanity/image";
 import { productsQuery } from "@/lib/sanity/queries";
 import type { SanityProductRow } from "@/lib/sanity/types";
 
-function mapSanityRows(rows: SanityProductRow[]): CatalogProduct[] {
+export function mapSanityProductRows(rows: SanityProductRow[]): CatalogProduct[] {
   const out: CatalogProduct[] = [];
   for (const row of rows) {
     const name = row.name?.trim();
@@ -40,7 +40,7 @@ export async function getCatalogProducts(): Promise<CatalogProduct[]> {
 
   try {
     const rows = await client.fetch<SanityProductRow[]>(productsQuery);
-    const mapped = mapSanityRows(rows ?? []);
+    const mapped = mapSanityProductRows(rows ?? []);
     if (mapped.length === 0) {
       return fallbackCatalogProducts;
     }

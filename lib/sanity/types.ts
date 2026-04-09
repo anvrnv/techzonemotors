@@ -16,3 +16,8 @@ export type SanitySvoProductRow = {
   priceDiscount?: string;
   image?: Record<string, unknown> | null;
 };
+
+/** Singleton `homeCarouselSettings` row from `homeCarouselSettingsQuery`. */
+export type SanityHomeCarouselSettingsRow = {
+  items?: (SanityProductRow | null)[] | null;
+};
