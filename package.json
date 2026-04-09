@@ -12,6 +12,7 @@
     "sanity:seed-svo": "tsx --tsconfig tsconfig.json scripts/seed-sanity-svo.ts"
   },
   "dependencies": {
+    "@portabletext/react": "^3.2.4",
     "@prisma/adapter-pg": "^7",
     "@prisma/client": "^7",
     "@sanity/image-url": "^2.1.1",

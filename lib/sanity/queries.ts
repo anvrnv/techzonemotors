@@ -24,3 +24,22 @@ export const homeCarouselSettingsQuery = `*[_type == "homeCarouselSettings" && _
     image
   }
 }`;
+
+const publishedArticleFilter = `_type == "article" && !(_id in path("drafts.**"))`;
+
+export const articlesListQuery = `*[${publishedArticleFilter}] | order(sortOrder asc, title asc) {
+  title,
+  excerpt,
+  "slug": slug.current
+}`;
+
+export const articleSlugsQuery = `*[${publishedArticleFilter} && defined(slug.current)]{
+  "slug": slug.current
+}`;
+
+export const articleBySlugQuery = `*[${publishedArticleFilter} && slug.current == $slug][0]{
+  title,
+  excerpt,
+  "slug": slug.current,
+  body
+}`;

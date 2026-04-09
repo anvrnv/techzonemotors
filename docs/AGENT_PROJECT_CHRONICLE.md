@@ -12,7 +12,7 @@ This document is the **structural source of truth** for agents. After meaningful
 |-------|--------|
 | Framework | Next.js **16.2.1** (App Router) |
 | UI | React **19**, Tailwind **4** (`@tailwindcss/postcss`, `postcss.config.mjs`, `app/globals.css`) |
-| CMS | Sanity **5** + `next-sanity` **12**; Studio at **`/studio`** |
+| CMS | Sanity **5** + `next-sanity` **12**; Studio at **`/studio`**; article bodies rendered with **`@portabletext/react`** |
 | DB | PostgreSQL via Prisma **7** with **`@prisma/adapter-pg`** (`lib/prisma.ts`) |
 | Integrations | Telegram Bot API for lead notifications (`app/api/contact/route.ts`) |
 
@@ -43,7 +43,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `package.json` | Scripts: `dev`, `build` (= `prisma generate && next build`), `start`, `lint`, `postinstall` (= `prisma generate`), `sanity:seed-catalog`, `sanity:seed-svo` |
+| `package.json` | Scripts: `dev`, `build` (= `prisma generate && next build`), `start`, `lint`, `postinstall` (= `prisma generate`), `sanity:seed-catalog`, `sanity:seed-svo`; dependency `@portabletext/react` (article body UI) |
 | `package-lock.json` | Locked dependencies |
 | `tsconfig.json` | TypeScript; path alias `@/*` → repo root |
 | `next.config.ts` | Next config; `images.remotePatterns` for `cdn.sanity.io` |
@@ -63,12 +63,14 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `sanity.config.ts` | Studio config: project id resolver, dataset, schema types, `basePath: "/studio"`, `structureTool` with list items: **Карусель главной** (singleton `homeCarouselSettings` / id `homeCarouselSettings`), **Каталог товаров** (`product`), **Техника для СВО** (`svoProduct`) |
+| `sanity.config.ts` | Studio config: project id resolver, dataset, schema types, `basePath: "/studio"`, `structureTool` with list items: **Карусель главной** (singleton `homeCarouselSettings` / id `homeCarouselSettings`), **Каталог товаров** (`documentTypeList("product")`), **Техника для СВО** (`svoProduct`), **Статьи** (`documentTypeList("article")`) |
 | `sanity.cli.ts` | Sanity CLI API project/dataset from `lib/sanity/env` |
-| `sanity/schemaTypes/index.ts` | Exports schema type array (`homeCarouselSettings`, `product`, `svoProduct`) |
+| `sanity/schemaTypes/index.ts` | Exports schema type array (`blockContent`, `homeCarouselSettings`, `product`, `svoProduct`, `article`) |
+| `sanity/schemaTypes/blockContent.ts` | Shared Portable Text type `blockContent` (blocks, headings, lists, marks, links, images) for article body |
 | `sanity/schemaTypes/homeCarouselSettings.ts` | Document type `homeCarouselSettings`: ordered array of references to `product` (Studio title **Карусель главной**) |
 | `sanity/schemaTypes/product.ts` | Document type `product`: name, slug, description, price (string), image, sortOrder |
 | `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: name, slug, description, image (hotspot), sortOrder, `priceRegular`, `priceDiscount` |
+| `sanity/schemaTypes/article.ts` | Document type `article`: title, slug, excerpt (SEO/list, max 300), sortOrder, body (`blockContent`) |
 
 ### Library code (`lib/`)
 
@@ -85,8 +87,9 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `lib/sanity/env.ts` | `apiVersion`, `dataset`, `projectId`, `resolveProjectIdForSanityTools()`, placeholder for missing id |
 | `lib/sanity/client.ts` | `getSanityClient()` — `next-sanity` `createClient`, CDN, null if no `projectId` |
 | `lib/sanity/image.ts` | `urlForImage` using `@sanity/image-url` |
-| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows) |
-| `lib/sanity/types.ts` | TypeScript shapes for Sanity rows (`SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`) |
+| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))` |
+| `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (uses `PortableTextBlock` from `@portabletext/types`) |
+| `lib/articles.ts` | `getArticlesList()`, `getArticleBySlug(slug)`, `getArticleSlugs()` — Sanity fetch via queries above; empty/null client → empty / not found |
 
 ### App Router (`app/`)
 
@@ -98,12 +101,15 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` (buy → contact modal), `ReviewsGrid`, `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
 | `app/catalog/CatalogPageClient.tsx` | Client catalog UI |
+| `app/articles/page.tsx` | Articles list: `revalidate = 60`, `getArticlesList()` |
+| `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
+| `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
 | `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: product cards, modals, CTA via `dispatchOpenContactModal` |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
-| `app/components/Navbar.tsx` | Site navigation |
+| `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
 | `app/components/Footer.tsx` | Footer |
 | `app/components/ProductCarousel.tsx` | Product carousel (home) |
 | `app/components/ReviewsGrid.tsx` | Reviews section |
@@ -180,13 +186,16 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 1. **Home carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`).
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
 3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → Sanity `svoProductsQuery` or `lib/svo-products-fallback.ts` (ISR `revalidate = 60` on `app/svo/page.tsx`).
-4. **Contact:** Client posts to `/api/contact` → Telegram → DB `Lead`.
-5. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`).
+4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
+5. **Contact:** Client posts to `/api/contact` → Telegram → DB `Lead`.
+6. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`, **Статьи** `article`).
 
 ---
 
 ## Schema summary
 
+- **Sanity `blockContent`:** shared Portable Text array type for rich article body — see `sanity/schemaTypes/blockContent.ts`.
+- **Sanity `article`:** SEO-oriented posts (title, slug, excerpt for list/meta, sortOrder, body → `blockContent`) — see `sanity/schemaTypes/article.ts`; Studio sidebar **Статьи**.
 - **Sanity `homeCarouselSettings`:** singleton document id `homeCarouselSettings`; ordered references to `product` for the home carousel — see `sanity/schemaTypes/homeCarouselSettings.ts`.
 - **Sanity `product`:** see `sanity/schemaTypes/product.ts`.
 - **Sanity `svoProduct`:** see `sanity/schemaTypes/svoProduct.ts` (separate Studio list from catalog).
@@ -194,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 (home carousel: singleton `homeCarouselSettings`, `lib/home-carousel.ts` / `getHomeCarouselProducts` on `app/page.tsx`; operators — `docs/PROJECT_ADMIN.md`, section B step 6).*
+*Last updated: 2026-04-09 (articles: Sanity `article` + `blockContent`, `/articles` ISR 60, `lib/articles.ts` + GROQ draft exclusion, Navbar link to `/articles`; `@portabletext/react`).*

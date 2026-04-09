@@ -33,6 +33,9 @@ export default defineConfig({
               .child(
                 S.documentTypeList("svoProduct").title("Техника для СВО"),
               ),
+            S.listItem()
+              .title("Статьи")
+              .child(S.documentTypeList("article").title("Статьи")),
           ]),
     }),
   ],

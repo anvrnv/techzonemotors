@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "@portabletext/types";
+
 /** Raw product row returned by `productsQuery` in GROQ. */
 export type SanityProductRow = {
   id: string;
@@ -20,4 +22,19 @@ export type SanitySvoProductRow = {
 /** Singleton `homeCarouselSettings` row from `homeCarouselSettingsQuery`. */
 export type SanityHomeCarouselSettingsRow = {
   items?: (SanityProductRow | null)[] | null;
+};
+
+/** Row for article cards from `articlesListQuery`. */
+export type SanityArticleListRow = {
+  title?: string;
+  excerpt?: string | null;
+  slug?: string | null;
+};
+
+/** Full article from `articleBySlugQuery` (body is Portable Text). */
+export type SanityArticleDetail = {
+  title?: string;
+  excerpt?: string | null;
+  slug?: string | null;
+  body?: PortableTextBlock[] | null;
 };
