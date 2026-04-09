@@ -41,11 +41,14 @@ function ProductModal({
         className="w-full max-w-5xl rounded-2xl overflow-hidden flex flex-col shadow-2xl"
         style={{ height: "min(80vh, 700px)" }}
       >
-        <div className="flex-none" style={{ height: "72%" }}>
+        <div
+          className="flex-none flex items-center justify-center bg-zinc-950"
+          style={{ height: "72%" }}
+        >
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover brightness-110"
+            className="max-h-full max-w-full object-contain brightness-110"
           />
         </div>
 
