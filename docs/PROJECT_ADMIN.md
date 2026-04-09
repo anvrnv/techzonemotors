@@ -67,6 +67,8 @@ flowchart LR
 | `NEXT_PUBLIC_SANITY_API_VERSION` | Версия API Sanity (опционально, есть дефолт в коде) |
 | `SANITY_API_WRITE_TOKEN` | Токен с правами записи — **только** для CLI/скриптов (seed), не обязателен для работы чтения каталога на сайте |
 
+**Studio на домене (`/studio`):** `NEXT_PUBLIC_SANITY_PROJECT_ID` и `NEXT_PUBLIC_SANITY_DATASET` должны быть в **`.env.local` на VPS до команды `npm run build`**. Next встраивает `NEXT_PUBLIC_*` в клиент при сборке; если собрать без них, Studio падала бы с общей ошибкой Sanity. После добавления или смены этих переменных снова **`npm run build`** и **`pm2 reload techzonemotors --update-env`**.
+
 Файлы `.env*` **в git не коммитятся** (см. `.gitignore`).
 
 ### Sanity (sanity.io)

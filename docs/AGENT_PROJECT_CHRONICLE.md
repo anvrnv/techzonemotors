@@ -96,7 +96,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/svo/page.tsx` | Client-only page: локальный массив товаров SVO, своя вёрстка, CTA через `dispatchOpenContactModal` |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
-| `app/studio/[[...tool]]/page.tsx` | Client `NextStudio` with `sanity.config` |
+| `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
 | `app/components/Navbar.tsx` | Site navigation |
 | `app/components/Footer.tsx` | Footer |
 | `app/components/ProductCarousel.tsx` | Product carousel (home) |

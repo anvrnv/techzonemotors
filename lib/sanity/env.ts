@@ -16,3 +16,9 @@ export const SANITY_STUDIO_PROJECT_PLACEHOLDER = "missing-project-id";
 export function resolveProjectIdForSanityTools(): string {
   return projectId || SANITY_STUDIO_PROJECT_PLACEHOLDER;
 }
+
+/** Для Studio: реальный project id из env при сборке (NEXT_PUBLIC_* инлайнится в билд). */
+export function isSanityStudioConfigured(): boolean {
+  const id = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  return typeof id === "string" && id.trim().length > 0;
+}
