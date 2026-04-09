@@ -73,22 +73,25 @@ export default function ProductCarousel({
         </button>
 
         <div
-          className="my-auto w-full max-w-6xl max-h-full min-h-0 overflow-y-auto px-8 md:px-16"
+          className="w-full max-w-6xl mx-auto px-8 md:px-16 h-full min-h-0"
           style={{
             opacity: fading ? 0 : 1,
             transition: "opacity 0.15s ease",
           }}
         >
-          <div className="flex flex-col overflow-hidden rounded-2xl shadow-2xl">
-            <div className="w-full shrink-0 bg-zinc-950 leading-none">
+          <div className="rounded-2xl overflow-hidden h-full flex flex-col shadow-2xl">
+            <div className="flex-none" style={{ height: "72%" }}>
               <img
                 src={product.image}
                 alt={product.name}
-                className="mx-auto block h-auto max-h-[min(72vh,680px)] w-full max-w-full"
+                className="w-full h-full object-cover"
               />
             </div>
 
-            <div className="shrink-0 bg-zinc-900 px-8 py-5">
+            <div
+              className="flex-none bg-zinc-900 px-8 py-5 flex flex-col justify-center"
+              style={{ height: "28%" }}
+            >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="min-w-0">
                   <h3 className="text-white font-bold text-2xl leading-snug truncate">
