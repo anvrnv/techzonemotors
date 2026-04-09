@@ -28,7 +28,7 @@ flowchart LR
 |--------|----------|
 | Код | Git (удалённый репозиторий подключается у вас; в `deploy/setup-server.sh` указан пример `github.com/anvrnv/techzonemotors.git` — при расхождении ориентируйтесь на ваш фактический remote). |
 | Ветка продакшена | `main` (см. `.github/workflows/deploy.yml`). |
-| CI/CD | GitHub Actions: SSH на сервер, `git pull`, `npm install`, `npx prisma db push`, `npm run build`, `pm2 reload techzonemotors --update-env`. |
+| CI/CD | GitHub Actions: SSH на сервер, `git fetch` + `git reset --hard origin/main` (без локальных расхождений с `main`), `npm install`, `npx prisma db push`, `npm run build`, `pm2 reload techzonemotors --update-env`. |
 | Каталог на сервере | `/var/www/techzonemotors` (см. workflow и `ecosystem.config.js`). |
 | Процесс PM2 | Имя приложения: `techzonemotors`. |
 

@@ -20,7 +20,9 @@ jobs:
           script: |
             set -e
             cd /var/www/techzonemotors
-            git pull origin main
+            # Совпадает с origin/main; иначе локальный package-lock.json и т.п. ломают git pull
+            git fetch origin main
+            git reset --hard origin/main
             npm install --production=false
             npx prisma db push
             npm run build

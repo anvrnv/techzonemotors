@@ -18,7 +18,7 @@ This document is the **structural source of truth** for agents. After meaningful
 
 **Next.js note:** `AGENTS.md` states this may differ from older Next.js docs; prefer `node_modules/next/dist/docs/` when unsure.
 
-**Deploy:** Push to `main` triggers `.github/workflows/deploy.yml` (SSH → `git pull`, `npm install`, `npx prisma db push`, `npm run build`, `pm2 reload techzonemotors`). Server path `/var/www/techzonemotors`. See `docs/PROJECT_ADMIN.md` for secrets.
+**Deploy:** Push to `main` triggers `.github/workflows/deploy.yml` (SSH → `git fetch` + `git reset --hard origin/main`, `npm install`, `npx prisma db push`, `npm run build`, `pm2 reload techzonemotors`). Server path `/var/www/techzonemotors`. See `docs/PROJECT_ADMIN.md` for secrets.
 
 **Agent workflow:** After substantive edits — commit + `git push` per `.cursor/rules/git-push-autodeploy.mdc` (unless user forbids).
 
