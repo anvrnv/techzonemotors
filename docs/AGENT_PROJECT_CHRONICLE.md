@@ -100,18 +100,18 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/page.tsx` | Home server page: `revalidate = 60`, loads `getHomeCarouselProducts()` from `lib/home-carousel.ts`, renders `HomeClient` |
 | `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` (buy → contact modal), `ReviewsGrid`, `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
-| `app/catalog/CatalogPageClient.tsx` | Client catalog UI; product modal’s large image uses `object-contain`, centered, `bg-zinc-950` (grid thumbnails unchanged). |
+| `app/catalog/CatalogPageClient.tsx` | Client catalog UI; product modal image is intrinsic height (`w-full h-auto`, `max-h` cap), no fixed 72/28 split; scroll if tall (grid thumbnails unchanged). |
 | `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
 | `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
 | `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
-| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: product cards, modals, CTA via `dispatchOpenContactModal`; modal large image uses `object-contain`, centered, `bg-zinc-950` (small card thumbs unchanged). |
+| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: product cards, modals, CTA; modal image intrinsic height + `max-h` cap like catalog modal (small card thumbs unchanged). |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
 | `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
 | `app/components/Footer.tsx` | Footer |
-| `app/components/ProductCarousel.tsx` | Home product carousel; ~72% slide image uses `object-contain`, centered, `bg-zinc-950`. |
+| `app/components/ProductCarousel.tsx` | Home carousel; slide image `w-full h-auto` with `max-h` cap (no fixed 72% frame — avoids letterboxing on wide photos). |
 | `app/components/ReviewsGrid.tsx` | Reviews section |
 | `app/components/ContactModal.tsx` | Contact form modal UI |
 | `app/components/GlobalContactModal.tsx` | Global modal + event listener for `OPEN_CONTACT_MODAL_EVENT` |
@@ -203,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 (large product image areas — `ProductCarousel` main panel, catalog/SVO modals: `object-contain`, centered, `bg-zinc-950` instead of `object-cover`; grid/card thumbnails unchanged).*
+*Last updated: 2026-04-09 (large product images: intrinsic height `w-full h-auto` + `max-h` cap; removed fixed 72/28 split to avoid letterboxing; modals `max-h-[90vh]` scroll).*

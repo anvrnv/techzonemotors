@@ -37,25 +37,16 @@ function ProductModal({
         </svg>
       </button>
 
-      <div
-        className="w-full max-w-5xl rounded-2xl overflow-hidden flex flex-col shadow-2xl"
-        style={{ height: "min(80vh, 700px)" }}
-      >
-        <div
-          className="flex-none flex items-center justify-center bg-zinc-950"
-          style={{ height: "72%" }}
-        >
+      <div className="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-y-auto overflow-x-hidden rounded-2xl shadow-2xl">
+        <div className="w-full shrink-0 bg-zinc-950 leading-none">
           <img
             src={product.image}
             alt={product.name}
-            className="max-h-full max-w-full object-contain brightness-110"
+            className="mx-auto block h-auto max-h-[min(70vh,560px)] w-full max-w-full brightness-110"
           />
         </div>
 
-        <div
-          className="flex-none bg-zinc-900 px-8 py-5 flex flex-col justify-center"
-          style={{ height: "28%" }}
-        >
+        <div className="shrink-0 bg-zinc-900 px-8 py-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="min-w-0">
               <h3 className="text-white font-bold text-2xl leading-snug truncate">
