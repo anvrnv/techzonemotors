@@ -203,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 (articles: list `metadata`, detail `generateMetadata` + `generateStaticParams` + `notFound`, Sanity `article` + `blockContent`, ISR 60, Navbar **Статьи**; product carousel + catalog/SVO modals reverted to original `object-cover` / 72–28 split).*
+*Last updated: 2026-04-09 (articles: list `metadata`, detail `generateMetadata` + `generateStaticParams` + `notFound`, Sanity `article` + `blockContent`, ISR 60, Navbar **Статьи**; product carousel + catalog/SVO modals: image/text height **82% / 18%**, `object-cover`).*

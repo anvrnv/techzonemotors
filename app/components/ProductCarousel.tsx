@@ -80,7 +80,7 @@ export default function ProductCarousel({
           }}
         >
           <div className="rounded-2xl overflow-hidden h-full flex flex-col shadow-2xl">
-            <div className="flex-none" style={{ height: "72%" }}>
+            <div className="flex-none" style={{ height: "82%" }}>
               <img
                 src={product.image}
                 alt={product.name}
@@ -90,7 +90,7 @@ export default function ProductCarousel({
 
             <div
               className="flex-none bg-zinc-900 px-8 py-5 flex flex-col justify-center"
-              style={{ height: "28%" }}
+              style={{ height: "18%" }}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="min-w-0">
