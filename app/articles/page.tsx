@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getArticlesList } from "@/lib/articles";
+
+export const metadata: Metadata = {
+  title: "Статьи | TechZone Motors",
+  description:
+    "Полезные материалы и новости TechZone Motors — гайды, обзоры и обновления.",
+};
 
 export const revalidate = 60;
 

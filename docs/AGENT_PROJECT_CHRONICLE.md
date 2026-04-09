@@ -101,7 +101,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` (buy → contact modal), `ReviewsGrid`, `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
 | `app/catalog/CatalogPageClient.tsx` | Client catalog UI |
-| `app/articles/page.tsx` | Articles list: `revalidate = 60`, `getArticlesList()` |
+| `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
 | `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
 | `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
@@ -203,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 (articles: Sanity `article` + `blockContent`, `/articles` ISR 60, `lib/articles.ts` + GROQ draft exclusion, Navbar link to `/articles`; `@portabletext/react`).*
+*Last updated: 2026-04-09 (articles: list page `metadata`, detail `generateMetadata` + `generateStaticParams` + `notFound`, Sanity `article` + `blockContent`, ISR 60, GROQ published-only filter, Navbar **Статьи**).*
