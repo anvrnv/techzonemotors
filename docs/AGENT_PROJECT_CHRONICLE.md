@@ -98,20 +98,20 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/layout.tsx` | Root layout: Montserrat font, `Navbar`, `main`, `GlobalContactModal`; metadata "TechZone Motors" |
 | `app/globals.css` | Global styles / Tailwind entry |
 | `app/page.tsx` | Home server page: `revalidate = 60`, loads `getHomeCarouselProducts()` from `lib/home-carousel.ts`, renders `HomeClient` |
-| `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` (buy → contact modal), `ReviewsGrid`, `Footer` |
+| `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` with `onDetailsClick` → `router.push("/catalog")` («Подробнее») and `onBuyClick` → contact modal (`dispatchOpenContactModal`), `ReviewsGrid`, `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
-| `app/catalog/CatalogPageClient.tsx` | Client catalog UI |
+| `app/catalog/CatalogPageClient.tsx` | Client catalog UI; `ProductModal`: `aspect-[3/2]` hero + bottom gradient overlay (same pattern as home carousel), `max-h-[90vh] overflow-y-auto`; `role="dialog"`, `aria-modal`, `aria-labelledby`, Escape closes |
 | `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
 | `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
 | `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
-| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: product cards, modals, CTA via `dispatchOpenContactModal` |
+| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: cards with `SvoBadge` top-left (`z-20`); product modal matches catalog (3:2 + overlay, `max-h-[90vh]` scroll, dialog a11y, Escape); CTA via `dispatchOpenContactModal` |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
 | `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
 | `app/components/Footer.tsx` | Footer |
-| `app/components/ProductCarousel.tsx` | Product carousel (home) |
+| `app/components/ProductCarousel.tsx` | Home carousel: large cards `aspect-[3/2]`, full-bleed `object-cover` image, bottom gradient overlay (title, excerpt, price, actions); fade/slide timer cleared on unmount; optional `onDetailsClick` for «Подробнее» (separate from «Купить» / buy handler) |
 | `app/components/ReviewsGrid.tsx` | Reviews section |
 | `app/components/ContactModal.tsx` | Contact form modal UI |
 | `app/components/GlobalContactModal.tsx` | Global modal + event listener for `OPEN_CONTACT_MODAL_EVENT` |
@@ -183,7 +183,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ## Data flow shortcuts
 
-1. **Home carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`).
+1. **Home carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). On the client, `HomeClient` wires «Подробнее» to `/catalog` and «Купить» to the global contact modal via carousel props.
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
 3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → Sanity `svoProductsQuery` or `lib/svo-products-fallback.ts` (ISR `revalidate = 60` on `app/svo/page.tsx`).
 4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
@@ -203,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 (articles: list `metadata`, detail `generateMetadata` + `generateStaticParams` + `notFound`, Sanity `article` + `blockContent`, ISR 60, Navbar **Статьи**; product carousel + catalog/SVO modals: image/text height **82% / 18%**, `object-cover`).*
+*Last updated: 2026-04-09 — Home `ProductCarousel`: 3:2 cards, full-bleed cover, bottom gradient overlay, timer cleanup on unmount, optional `onDetailsClick` vs buy; `HomeClient` routes details to `/catalog` and buy to contact modal. Catalog and SVO product modals: same 3:2 + overlay layout, `max-h-[90vh]` with vertical scroll, dialog semantics and Escape to close; SVO cards show `SvoBadge` top-left (`z-20`).*

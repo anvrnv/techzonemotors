@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import type { CatalogProduct, CatalogProductsProps } from "@/lib/catalog-product";
 import { dispatchOpenContactModal } from "@/lib/contact-modal";
@@ -14,6 +14,16 @@ function ProductModal({
   onClose: () => void;
   onBuyClick: () => void;
 }) {
+  const titleId = useId();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-8"
@@ -23,9 +33,10 @@ function ProductModal({
       }}
     >
       <button
+        type="button"
         onClick={onClose}
         aria-label="Закрыть"
-        className="absolute top-5 right-5 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 border border-white/20 text-white/70 hover:text-white hover:bg-white/10 transition-all"
+        className="absolute top-5 right-5 z-[95] min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 border border-white/20 text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path
@@ -38,49 +49,52 @@ function ProductModal({
       </button>
 
       <div
-        className="w-full max-w-5xl rounded-2xl overflow-hidden flex flex-col shadow-2xl"
-        style={{ height: "min(80vh, 700px)" }}
+        className="w-full max-w-5xl max-h-[90vh] overflow-y-auto overflow-x-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
       >
-        <div className="flex-none" style={{ height: "82%" }}>
+        <div className="relative w-full aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover brightness-110"
+            className="absolute inset-0 z-0 w-full h-full object-cover brightness-110"
           />
-        </div>
-
-        <div
-          className="flex-none bg-zinc-900 px-8 py-5 flex flex-col justify-center"
-          style={{ height: "18%" }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="min-w-0">
-              <h3 className="text-white font-bold text-2xl leading-snug truncate">
-                {product.name}
-              </h3>
-              <p className="text-zinc-400 text-sm mt-1 leading-relaxed line-clamp-2">
-                {product.description}
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <span className="text-orange-400 font-semibold text-2xl whitespace-nowrap">
-                {product.price}
-              </span>
-              <button
-                className="px-5 py-2 rounded-full border border-white text-white text-sm font-medium hover:bg-white hover:text-black transition-all duration-200 whitespace-nowrap"
-                onClick={onClose}
-              >
-                Подробнее
-              </button>
-              <button
-                className="px-5 py-2 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 active:scale-95 transition-all duration-200 whitespace-nowrap"
-                onClick={() => {
-                  onClose();
-                  onBuyClick();
-                }}
-              >
-                Купить
-              </button>
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-6 py-5 md:px-8 md:pb-6 pt-16 md:pt-20">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div className="min-w-0">
+                <h3
+                  id={titleId}
+                  className="text-white font-bold text-2xl leading-snug truncate drop-shadow-sm"
+                >
+                  {product.name}
+                </h3>
+                <p className="text-zinc-200/90 text-sm mt-1 leading-relaxed line-clamp-2 drop-shadow-sm">
+                  {product.description}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <span className="text-orange-400 font-semibold text-2xl whitespace-nowrap drop-shadow-sm">
+                  {product.price}
+                </span>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-full border border-white text-white text-sm font-medium hover:bg-white hover:text-black transition-all duration-200 whitespace-nowrap"
+                  onClick={onClose}
+                >
+                  Подробнее
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 active:scale-95 transition-all duration-200 whitespace-nowrap"
+                  onClick={() => {
+                    onClose();
+                    onBuyClick();
+                  }}
+                >
+                  Купить
+                </button>
+              </div>
             </div>
           </div>
         </div>
