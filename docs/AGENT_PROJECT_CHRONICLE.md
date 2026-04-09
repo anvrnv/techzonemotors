@@ -203,4 +203,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 — Home `ProductCarousel`: 3:2 cards, full-bleed cover, bottom gradient overlay, timer cleanup on unmount, optional `onDetailsClick` vs buy; `HomeClient` routes details to `/catalog` and buy to contact modal. Catalog and SVO product modals: same 3:2 + overlay layout, `max-h-[90vh]` with vertical scroll, dialog semantics and Escape to close; SVO cards show `SvoBadge` top-left (`z-20`).*
+*Last updated: 2026-04-09 — Sanity singleton `homeCarouselSettings` (Studio **Карусель главной**): ordered `product` refs; `homeCarouselSettingsQuery` + `SanityHomeCarouselSettingsRow`; `lib/home-carousel.ts` `getHomeCarouselProducts()` uses `mapSanityProductRows` from `lib/products.ts` and falls back to `getCatalogProducts()`; `app/page.tsx` loads the home carousel from `getHomeCarouselProducts()`. Earlier UI pass: home `ProductCarousel` 3:2 + overlay; catalog/SVO modals aligned; `SvoBadge` on SVO cards.*
