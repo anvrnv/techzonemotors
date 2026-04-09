@@ -147,7 +147,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `docs/PROJECT_ADMIN.md` | Russian admin / architecture / secrets checklist for humans |
+| `docs/PROJECT_ADMIN.md` | Russian admin / secrets; section **Пошагово** — GitHub Actions, Sanity Open Studio, `/studio` + `.env.local` на VPS |
 | `docs/AGENT_PROJECT_CHRONICLE.md` | This file |
 
 ### Other root files
