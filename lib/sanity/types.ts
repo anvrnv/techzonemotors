@@ -38,3 +38,12 @@ export type SanityArticleDetail = {
   slug?: string | null;
   body?: PortableTextBlock[] | null;
 };
+
+/** Raw `review` row from `reviewsQuery` (published only). */
+export type SanityReviewRow = {
+  id: string;
+  authorName?: string;
+  text?: string;
+  ratingTen?: number;
+  sortOrder?: number;
+};

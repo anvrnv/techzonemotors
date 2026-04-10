@@ -63,14 +63,15 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `sanity.config.ts` | Studio config: project id resolver, dataset, schema types, `basePath: "/studio"`, `structureTool` with list items: **Карусель главной** (singleton `homeCarouselSettings` / id `homeCarouselSettings`), **Каталог товаров** (`documentTypeList("product")`), **Техника для СВО** (`svoProduct`), **Статьи** (`documentTypeList("article")`) |
+| `sanity.config.ts` | Studio config: project id resolver, dataset, schema types, `basePath: "/studio"`, `structureTool` with list items: **Карусель главной** (singleton `homeCarouselSettings` / id `homeCarouselSettings`), **Каталог товаров** (`documentTypeList("product")`), **Техника для СВО** (`svoProduct`), **Статьи** (`documentTypeList("article")`), **Отзывы** (`documentTypeList("review")`) |
 | `sanity.cli.ts` | Sanity CLI API project/dataset from `lib/sanity/env` |
-| `sanity/schemaTypes/index.ts` | Exports schema type array (`blockContent`, `homeCarouselSettings`, `product`, `svoProduct`, `article`) |
+| `sanity/schemaTypes/index.ts` | Exports schema type array (`blockContent`, `homeCarouselSettings`, `product`, `svoProduct`, `article`, `review`) |
 | `sanity/schemaTypes/blockContent.ts` | Shared Portable Text type `blockContent` (blocks, headings, lists, marks, links, images) for article body |
 | `sanity/schemaTypes/homeCarouselSettings.ts` | Document type `homeCarouselSettings`: ordered array of references to `product` (Studio title **Карусель главной**) |
 | `sanity/schemaTypes/product.ts` | Document type `product`: name, slug, description, price (string), image, sortOrder |
 | `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: name, slug, description, image (hotspot), sortOrder, `priceRegular`, `priceDiscount` |
 | `sanity/schemaTypes/article.ts` | Document type `article`: title, slug, excerpt (SEO/list, max 300), sortOrder, body (`blockContent`) |
+| `sanity/schemaTypes/review.ts` | Document type `review`: `authorName`, `text`, `ratingTen` (integer 0–10), `sortOrder`; Studio list ordering **Порядок, затем имя** (`sortOrder`, `authorName`, `_id` asc); list preview truncates `text` (ellipsis after 60 chars when paired with rating in subtitle) |
 
 ### Library code (`lib/`)
 
@@ -87,8 +88,9 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `lib/sanity/env.ts` | `apiVersion`, `dataset`, `projectId`, `resolveProjectIdForSanityTools()`, placeholder for missing id |
 | `lib/sanity/client.ts` | `getSanityClient()` — `next-sanity` `createClient`, CDN, null if no `projectId` |
 | `lib/sanity/image.ts` | `urlForImage` using `@sanity/image-url` |
-| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))` |
-| `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (uses `PortableTextBlock` from `@portabletext/types`) |
+| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))`; `reviewsQuery` for `review` with same published filter, `order(sortOrder asc, authorName asc, _id asc)`, slice `[0...12]`, projects `"id": _id` plus review fields |
+| `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (uses `PortableTextBlock` from `@portabletext/types`); `SanityReviewRow` for home reviews grid |
+| `lib/reviews.ts` | `ReviewData`, `getReviewsForGrid()`: fetch via `reviewsQuery`, map rows (trim strings, integer `ratingTen` 0–10), **drop** invalid, pad to **12** slots with `null`; no client / error → 12× `null` |
 | `lib/articles.ts` | `getArticlesList()`, `getArticleBySlug(slug)`, `getArticleSlugs()` — Sanity fetch via queries above; empty/null client → empty / not found |
 
 ### App Router (`app/`)
@@ -97,8 +99,8 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 |------|------|
 | `app/layout.tsx` | Root layout: Montserrat font, `Navbar`, `main`, `GlobalContactModal`; metadata "TechZone Motors" |
 | `app/globals.css` | Global styles / Tailwind entry |
-| `app/page.tsx` | Home server page: `revalidate = 60`, loads `getHomeCarouselProducts()` from `lib/home-carousel.ts`, renders `HomeClient` |
-| `app/HomeClient.tsx` | Client home: dark layout, `ProductCarousel` with `onDetailsClick` → `router.push("/catalog")` («Подробнее») and `onBuyClick` → contact modal (`dispatchOpenContactModal`), `ReviewsGrid`, `Footer` |
+| `app/page.tsx` | Home server page: `revalidate = 60`, `Promise.all` of `getHomeCarouselProducts()` (`lib/home-carousel.ts`) and `getReviewsForGrid()` (`lib/reviews.ts`), passes `products` + `reviews` to `HomeClient` |
+| `app/HomeClient.tsx` | Client home: `HomeClientProps` = `CatalogProductsProps` & `{ reviews: (ReviewData \| null)[] }`; dark layout, `ProductCarousel` with `onDetailsClick` → `router.push("/catalog")` («Подробнее») and `onBuyClick` → contact modal (`dispatchOpenContactModal`), `ReviewsGrid` (12-slot grid from `reviews`), `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
 | `app/catalog/CatalogPageClient.tsx` | Client catalog UI; `ProductModal`: `aspect-[3/2]` hero + bottom gradient overlay (same pattern as home carousel), `max-h-[90vh] overflow-y-auto`; `role="dialog"`, `aria-modal`, `aria-labelledby`, Escape closes |
 | `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
@@ -112,7 +114,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
 | `app/components/Footer.tsx` | Footer |
 | `app/components/ProductCarousel.tsx` | Home carousel: large cards `aspect-[3/2]`, full-bleed `object-cover` image, bottom gradient overlay (title, excerpt, price, actions); fade/slide timer cleared on unmount; optional `onDetailsClick` for «Подробнее» (separate from «Купить» / buy handler) |
-| `app/components/ReviewsGrid.tsx` | Reviews section |
+| `app/components/ReviewsGrid.tsx` | Fixed **12**-cell grid (`md:grid-cols-10` with staggered col spans); normalizes to 12 slots (slice input, pad with `null`); filled and empty cells share the same shell padding/classes; star rating from `ratingTen / 2` (0–5); React keys: `review.id` + slot index vs `empty-` + index |
 | `app/components/ContactModal.tsx` | Contact form modal UI |
 | `app/components/GlobalContactModal.tsx` | Global modal + event listener for `OPEN_CONTACT_MODAL_EVENT` |
 
@@ -160,7 +162,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `docs/PROJECT_ADMIN.md` | Russian admin / secrets; section **Пошагово** — GitHub Actions, Sanity Open Studio (в т.ч. шаг 6: **Карусель главной** — порядок ссылок на `product`), `/studio` + `.env.local` на VPS |
+| `docs/PROJECT_ADMIN.md` | Russian admin / secrets; architecture includes home **Отзывы** (`review`); section **Пошагово** — GitHub Actions, Sanity Open Studio (в т.ч. шаг 6: **Карусель главной** — порядок ссылок на `product`), `/studio` + `.env.local` на VPS |
 | `docs/AGENT_PROJECT_CHRONICLE.md` | This file |
 
 ### Other root files
@@ -183,12 +185,12 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ## Data flow shortcuts
 
-1. **Home carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). On the client, `HomeClient` wires «Подробнее» to `/catalog` and «Купить» to the global contact modal via carousel props.
+1. **Home carousel + reviews:** Server `app/page.tsx` runs `Promise.all` of `getHomeCarouselProducts()` and `getReviewsForGrid()`. **Carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). **Reviews:** `getReviewsForGrid()` in `lib/reviews.ts` → `reviewsQuery` (published `review`, max 12, ordered by `sortOrder` / `authorName` / `_id`) → validate/drop bad rows → pad to 12 slots with `null`. On the client, `HomeClient` wires «Подробнее» to `/catalog`, «Купить» to the global contact modal, and passes `reviews` to `ReviewsGrid` (12-slot grid, composite keys).
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
 3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → Sanity `svoProductsQuery` or `lib/svo-products-fallback.ts` (ISR `revalidate = 60` on `app/svo/page.tsx`).
 4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
 5. **Contact:** Client posts to `/api/contact` → Telegram → DB `Lead`.
-6. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`, **Статьи** `article`).
+6. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`, **Статьи** `article`, **Отзывы** `review`).
 
 ---
 
@@ -196,6 +198,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 - **Sanity `blockContent`:** shared Portable Text array type for rich article body — see `sanity/schemaTypes/blockContent.ts`.
 - **Sanity `article`:** SEO-oriented posts (title, slug, excerpt for list/meta, sortOrder, body → `blockContent`) — see `sanity/schemaTypes/article.ts`; Studio sidebar **Статьи**.
+- **Sanity `review`:** customer reviews for the home grid (`authorName`, `text`, `ratingTen` 0–10, `sortOrder`) — see `sanity/schemaTypes/review.ts`; Studio **Отзывы** with ordering **Порядок, затем имя** (same tie-break order as `reviewsQuery`: `sortOrder`, `authorName`, `_id`); site shows stars as `ratingTen / 2`; `reviewsQuery` projects document `id` for stable React keys.
 - **Sanity `homeCarouselSettings`:** singleton document id `homeCarouselSettings`; ordered references to `product` for the home carousel — see `sanity/schemaTypes/homeCarouselSettings.ts`.
 - **Sanity `product`:** see `sanity/schemaTypes/product.ts`.
 - **Sanity `svoProduct`:** see `sanity/schemaTypes/svoProduct.ts` (separate Studio list from catalog).
@@ -203,4 +206,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-09 — Sanity singleton `homeCarouselSettings` (Studio **Карусель главной**): ordered `product` refs; `homeCarouselSettingsQuery` + `SanityHomeCarouselSettingsRow`; `lib/home-carousel.ts` `getHomeCarouselProducts()` uses `mapSanityProductRows` from `lib/products.ts` and falls back to `getCatalogProducts()`; `app/page.tsx` loads the home carousel from `getHomeCarouselProducts()`. Earlier UI pass: home `ProductCarousel` 3:2 + overlay; catalog/SVO modals aligned; `SvoBadge` on SVO cards.*
+*Last updated: 2026-04-10 — Home reviews: `reviewsQuery` order + `_id`, GROQ `"id"` alias; Studio `review` list ordering + preview ellipsis; `ReviewsGrid` 12-slot normalization, shared empty/filled shell padding, keys `id`+index / `empty-*`; `getReviewsForGrid()` validates and pads. Prior: 2026-04-09 — `homeCarouselSettings` carousel; UI 3:2 overlay, SVO badge.*

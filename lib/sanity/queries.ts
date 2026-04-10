@@ -43,3 +43,13 @@ export const articleBySlugQuery = `*[${publishedArticleFilter} && slug.current =
   "slug": slug.current,
   body
 }`;
+
+const publishedReviewFilter = `_type == "review" && !(_id in path("drafts.**"))`;
+
+export const reviewsQuery = `*[${publishedReviewFilter}] | order(sortOrder asc, authorName asc, _id asc) [0...12] {
+  "id": _id,
+  authorName,
+  text,
+  ratingTen,
+  sortOrder
+}`;

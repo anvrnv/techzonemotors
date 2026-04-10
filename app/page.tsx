@@ -1,9 +1,13 @@
 import HomeClient from "./HomeClient";
 import { getHomeCarouselProducts } from "@/lib/home-carousel";
+import { getReviewsForGrid } from "@/lib/reviews";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const products = await getHomeCarouselProducts();
-  return <HomeClient products={products} />;
+  const [products, reviews] = await Promise.all([
+    getHomeCarouselProducts(),
+    getReviewsForGrid(),
+  ]);
+  return <HomeClient products={products} reviews={reviews} />;
 }

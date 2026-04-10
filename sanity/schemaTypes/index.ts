@@ -4,6 +4,7 @@ import { articleType } from "./article";
 import { blockContentType } from "./blockContent";
 import { homeCarouselSettingsType } from "./homeCarouselSettings";
 import { productType } from "./product";
+import { reviewType } from "./review";
 import { svoProductType } from "./svoProduct";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
@@ -12,4 +13,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   productType,
   svoProductType,
   articleType,
+  reviewType,
 ];

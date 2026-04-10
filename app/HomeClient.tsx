@@ -6,9 +6,14 @@ import ProductCarousel from "./components/ProductCarousel";
 import ReviewsGrid from "./components/ReviewsGrid";
 import Footer from "./components/Footer";
 import type { CatalogProductsProps } from "@/lib/catalog-product";
+import type { ReviewData } from "@/lib/reviews";
 import { dispatchOpenContactModal } from "@/lib/contact-modal";
 
-export default function HomeClient({ products }: CatalogProductsProps) {
+type HomeClientProps = CatalogProductsProps & {
+  reviews: (ReviewData | null)[];
+};
+
+export default function HomeClient({ products, reviews }: HomeClientProps) {
   const router = useRouter();
   const openModal = () => dispatchOpenContactModal();
 
@@ -19,7 +24,7 @@ export default function HomeClient({ products }: CatalogProductsProps) {
         onBuyClick={openModal}
         onDetailsClick={() => router.push("/catalog")}
       />
-      <ReviewsGrid />
+      <ReviewsGrid reviews={reviews} />
       <Footer />
     </div>
   );

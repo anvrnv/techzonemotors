@@ -1,59 +1,153 @@
-const reviews = [
-  {
-    id: 1,
-    name: "Алексей М.",
-    stars: 5,
-    text: "Заказал Kayo TT140, доставили за 3 дня. Качество отличное, сборка аккуратная. Однозначно рекомендую этот магазин!",
-    colSpan: "md:col-span-3",
-  },
-  {
-    id: 2,
-    name: "Дмитрий К.",
-    stars: 5,
-    text: "Брал Apollo RFZ для сына. Ребёнок в восторге! Техника надёжная, цена честная. Спасибо TechZone Motors!",
-    colSpan: "md:col-span-3",
-  },
-  {
-    id: 3,
-    name: "Светлана Р.",
-    stars: 4,
-    text: "Хороший выбор моделей, удобный сайт. Менеджер помог определиться с выбором. Всё понравилось, вернусь снова.",
-    colSpan: "md:col-span-4",
-  },
-  {
-    id: 4,
-    name: "Игорь В.",
-    stars: 5,
-    text: "Уже второй раз покупаю здесь питбайк. Сервис на высшем уровне, всегда на связи. Лучший магазин в городе!",
-    colSpan: "md:col-span-4",
-  },
-  {
-    id: 5,
-    name: "Мария Т.",
-    stars: 5,
-    text: "Подарили мужу BSE J1 на день рождения. Он в восторге! Упакован надёжно, доставка без нареканий.",
-    colSpan: "md:col-span-3",
-  },
-  {
-    id: 6,
-    name: "Сергей Н.",
-    stars: 4,
-    text: "Хорошее соотношение цены и качества. Питбайк пришёл с небольшой задержкой, но техподдержка всё объяснила.",
-    colSpan: "md:col-span-3",
-  },
+"use client";
+
+import { useId } from "react";
+
+import type { ReviewData } from "@/lib/reviews";
+
+/** Row1 / Row3: 3+3+4; Row2 / Row4: 4+3+3 on `md:grid-cols-10`. */
+const MD_COL_SPANS: readonly string[] = [
+  "md:col-span-3",
+  "md:col-span-3",
+  "md:col-span-4",
+  "md:col-span-4",
+  "md:col-span-3",
+  "md:col-span-3",
+  "md:col-span-3",
+  "md:col-span-3",
+  "md:col-span-4",
+  "md:col-span-4",
+  "md:col-span-3",
+  "md:col-span-3",
 ];
 
-function StarRating({ count }: { count: number }) {
+const STAR_PATH =
+  "M12 2.5 14.47 9.02 21.5 9.02 15.76 13.24 18.23 20.26 12 16.04 5.77 20.26 8.24 13.24 2.5 9.02 9.53 9.02 Z";
+
+function clampStarsDisplay(ratingTen: number): number {
+  const v = ratingTen / 2;
+  if (!Number.isFinite(v)) return 0;
+  return Math.min(5, Math.max(0, v));
+}
+
+const EMPTY_STAR_STROKE = "rgb(161 161 170)"; /* zinc-400 */
+
+function StarIcon({
+  mode,
+  clipId,
+  className,
+}: {
+  mode: "full" | "half" | "empty";
+  /** Unique id for SVG `<clipPath>` when `mode === "half"`. */
+  clipId: string;
+  className?: string;
+}) {
+  const fill = "currentColor";
+  if (mode === "full") {
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        width={20}
+        height={20}
+        aria-hidden
+      >
+        <path d={STAR_PATH} fill={fill} />
+      </svg>
+    );
+  }
+  if (mode === "half") {
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        width={20}
+        height={20}
+        aria-hidden
+      >
+        <defs>
+          <clipPath id={clipId}>
+            <rect x="0" y="0" width="12" height="24" />
+          </clipPath>
+        </defs>
+        <path
+          d={STAR_PATH}
+          fill="none"
+          stroke={EMPTY_STAR_STROKE}
+          strokeWidth={1.2}
+        />
+        <path d={STAR_PATH} fill={fill} clipPath={`url(#${clipId})`} />
+      </svg>
+    );
+  }
   return (
-    <div className="flex gap-0.5 text-amber-400 text-lg">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i}>{i < count ? "★" : "☆"}</span>
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      aria-hidden
+    >
+      <path
+        d={STAR_PATH}
+        fill="none"
+        stroke={EMPTY_STAR_STROKE}
+        strokeWidth={1.2}
+      />
+    </svg>
+  );
+}
+
+function stableClipId(reactId: string, index: number) {
+  return `star-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}-${index}`;
+}
+
+function StarRatingRow({
+  starsDisplay,
+  label,
+}: {
+  starsDisplay: number;
+  label: string;
+}) {
+  const reactId = useId();
+  const cells: ("full" | "half" | "empty")[] = [];
+  for (let i = 1; i <= 5; i += 1) {
+    if (starsDisplay >= i) {
+      cells.push("full");
+    } else if (starsDisplay >= i - 0.5) {
+      cells.push("half");
+    } else {
+      cells.push("empty");
+    }
+  }
+  return (
+    <div
+      className="flex gap-0.5 text-amber-400 shrink-0"
+      role="img"
+      aria-label={label}
+    >
+      {cells.map((mode, idx) => (
+        <StarIcon
+          key={idx}
+          mode={mode}
+          clipId={stableClipId(reactId, idx)}
+        />
       ))}
     </div>
   );
 }
 
-export default function ReviewsGrid() {
+export type ReviewsGridProps = {
+  /** Always length 12; `null` renders an empty shell. */
+  reviews: (ReviewData | null)[];
+};
+
+export default function ReviewsGrid({ reviews }: ReviewsGridProps) {
+  const first = reviews.slice(0, 12);
+  const slots: (ReviewData | null)[] = [
+    ...first,
+    ...Array.from({ length: Math.max(0, 12 - first.length) }, () => null),
+  ];
+
   return (
     <section className="w-full max-w-7xl mx-auto px-6 py-16">
       <div className="text-center mb-10">
@@ -66,18 +160,51 @@ export default function ReviewsGrid() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
-        {reviews.map((review) => (
-          <div
-            key={review.id}
-            className={`${review.colSpan} bg-zinc-800/60 border border-white/10 rounded-2xl p-5 md:p-6 flex flex-col gap-3`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-white font-semibold">{review.name}</span>
-              <StarRating count={review.stars} />
+        {slots.map((review, index) => {
+          const colSpan = MD_COL_SPANS[index] ?? "md:col-span-3";
+          const shellClass = `${colSpan} bg-zinc-800/60 border border-white/10 rounded-2xl p-5 md:p-6 flex flex-col gap-3 min-h-[140px]`;
+
+          if (!review) {
+            return (
+              <div
+                key={`empty-${index}`}
+                className={shellClass}
+                aria-hidden
+              >
+                <div className="flex justify-end">
+                  <StarRatingRow
+                    starsDisplay={0}
+                    label="Оценка 0 из 5"
+                  />
+                </div>
+              </div>
+            );
+          }
+
+          const starsDisplay = clampStarsDisplay(review.ratingTen);
+          const halves = Math.round(starsDisplay * 2);
+          const label =
+            halves % 2 === 0
+              ? `Оценка ${halves / 2} из 5`
+              : `Оценка ${(halves / 2).toFixed(1)} из 5`;
+
+          return (
+            <div
+              key={`${review.id}-${index}`}
+              className={shellClass}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-white font-semibold">
+                  {review.authorName}
+                </span>
+                <StarRatingRow starsDisplay={starsDisplay} label={label} />
+              </div>
+              <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">
+                {review.text}
+              </p>
             </div>
-            <p className="text-zinc-300 text-sm leading-relaxed">{review.text}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
