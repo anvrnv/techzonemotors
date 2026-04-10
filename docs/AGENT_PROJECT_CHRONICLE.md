@@ -71,7 +71,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `sanity/schemaTypes/product.ts` | Document type `product`: name, slug, description, price (string), image, sortOrder |
 | `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: name, slug, description, image (hotspot), sortOrder, `priceRegular`, `priceDiscount` |
 | `sanity/schemaTypes/article.ts` | Document type `article`: title, slug, excerpt (SEO/list, max 300), sortOrder, body (`blockContent`) |
-| `sanity/schemaTypes/review.ts` | Document type `review`: `authorName`, `text`, `ratingTen` (integer 0–10), `sortOrder`; Studio list ordering **Порядок, затем имя** (`sortOrder`, `authorName`, `_id` asc); list preview truncates `text` (ellipsis after 60 chars when paired with rating in subtitle) |
+| `sanity/schemaTypes/review.ts` | Document type `review` (Studio **Отзыв**): `authorName`, `text`, `ratingTen` (integer 0–10), `sortOrder`; Studio ordering **Порядок, затем имя**; preview truncates `text` in subtitle |
 
 ### Library code (`lib/`)
 
@@ -88,9 +88,9 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `lib/sanity/env.ts` | `apiVersion`, `dataset`, `projectId`, `resolveProjectIdForSanityTools()`, placeholder for missing id |
 | `lib/sanity/client.ts` | `getSanityClient()` — `next-sanity` `createClient`, CDN, null if no `projectId` |
 | `lib/sanity/image.ts` | `urlForImage` using `@sanity/image-url` |
-| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))`; `reviewsQuery` for `review` with same published filter, `order(sortOrder asc, authorName asc, _id asc)`, slice `[0...12]`, projects `"id": _id` plus review fields |
+| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))`; `reviewsQuery` — published `review`, `order(sortOrder asc, authorName asc)`, slice `[0...12]`, projects `"id": _id` and fields |
 | `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (uses `PortableTextBlock` from `@portabletext/types`); `SanityReviewRow` for home reviews grid |
-| `lib/reviews.ts` | `ReviewData`, `getReviewsForGrid()`: fetch via `reviewsQuery`, map rows (trim strings, integer `ratingTen` 0–10), **drop** invalid, pad to **12** slots with `null`; no client / error → 12× `null` |
+| `lib/reviews.ts` | `ReviewData`, `getReviewsForGrid()`: `reviewsQuery` → map valid rows (trim strings, integer `ratingTen` 0–10), skip invalid, pad to **12** with `null`; no client / error → 12× `null` |
 | `lib/articles.ts` | `getArticlesList()`, `getArticleBySlug(slug)`, `getArticleSlugs()` — Sanity fetch via queries above; empty/null client → empty / not found |
 
 ### App Router (`app/`)
@@ -114,7 +114,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
 | `app/components/Footer.tsx` | Footer |
 | `app/components/ProductCarousel.tsx` | Home carousel: large cards `aspect-[3/2]`, full-bleed `object-cover` image, bottom gradient overlay (title, excerpt, price, actions); fade/slide timer cleared on unmount; optional `onDetailsClick` for «Подробнее» (separate from «Купить» / buy handler) |
-| `app/components/ReviewsGrid.tsx` | Fixed **12**-cell grid (`md:grid-cols-10` with staggered col spans); normalizes to 12 slots (slice input, pad with `null`); filled and empty cells share the same shell padding/classes; star rating from `ratingTen / 2` (0–5); React keys: `review.id` + slot index vs `empty-` + index |
+| `app/components/ReviewsGrid.tsx` | **12**-cell grid (`md:grid-cols-10`, rows 3+3+4 / 4+3+3 ×2); prop `reviews` padded to 12; stars from `ratingTen / 2` with half-star SVG (`useId` clip paths), `role="img"` + `aria-label`; empty slots = shell + outline stars only (`"use client"`) |
 | `app/components/ContactModal.tsx` | Contact form modal UI |
 | `app/components/GlobalContactModal.tsx` | Global modal + event listener for `OPEN_CONTACT_MODAL_EVENT` |
 
@@ -185,7 +185,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ## Data flow shortcuts
 
-1. **Home carousel + reviews:** Server `app/page.tsx` runs `Promise.all` of `getHomeCarouselProducts()` and `getReviewsForGrid()`. **Carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). **Reviews:** `getReviewsForGrid()` in `lib/reviews.ts` → `reviewsQuery` (published `review`, max 12, ordered by `sortOrder` / `authorName` / `_id`) → validate/drop bad rows → pad to 12 slots with `null`. On the client, `HomeClient` wires «Подробнее» to `/catalog`, «Купить» to the global contact modal, and passes `reviews` to `ReviewsGrid` (12-slot grid, composite keys).
+1. **Home carousel + reviews:** Server `app/page.tsx` runs `Promise.all` of `getHomeCarouselProducts()` and `getReviewsForGrid()`. **Carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). **Reviews:** `getReviewsForGrid()` in `lib/reviews.ts` → `reviewsQuery` (published `review`, max 12, `sortOrder` then `authorName`) → skip invalid rows → pad to 12 with `null`. `HomeClient` passes `reviews` to `ReviewsGrid`.
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
 3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → Sanity `svoProductsQuery` or `lib/svo-products-fallback.ts` (ISR `revalidate = 60` on `app/svo/page.tsx`).
 4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
@@ -198,7 +198,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 - **Sanity `blockContent`:** shared Portable Text array type for rich article body — see `sanity/schemaTypes/blockContent.ts`.
 - **Sanity `article`:** SEO-oriented posts (title, slug, excerpt for list/meta, sortOrder, body → `blockContent`) — see `sanity/schemaTypes/article.ts`; Studio sidebar **Статьи**.
-- **Sanity `review`:** customer reviews for the home grid (`authorName`, `text`, `ratingTen` 0–10, `sortOrder`) — see `sanity/schemaTypes/review.ts`; Studio **Отзывы** with ordering **Порядок, затем имя** (same tie-break order as `reviewsQuery`: `sortOrder`, `authorName`, `_id`); site shows stars as `ratingTen / 2`; `reviewsQuery` projects document `id` for stable React keys.
+- **Sanity `review`:** customer reviews for the home grid (`authorName`, `text`, `ratingTen` 0–10, `sortOrder`) — see `sanity/schemaTypes/review.ts`; Studio **Отзывы**; `reviewsQuery` matches `sortOrder` / `authorName`; site shows stars as `ratingTen / 2` (half stars in UI); `"id": _id` for React keys.
 - **Sanity `homeCarouselSettings`:** singleton document id `homeCarouselSettings`; ordered references to `product` for the home carousel — see `sanity/schemaTypes/homeCarouselSettings.ts`.
 - **Sanity `product`:** see `sanity/schemaTypes/product.ts`.
 - **Sanity `svoProduct`:** see `sanity/schemaTypes/svoProduct.ts` (separate Studio list from catalog).
@@ -206,4 +206,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-10 — Home reviews: `reviewsQuery` order + `_id`, GROQ `"id"` alias; Studio `review` list ordering + preview ellipsis; `ReviewsGrid` 12-slot normalization, shared empty/filled shell padding, keys `id`+index / `empty-*`; `getReviewsForGrid()` validates and pads. Prior: 2026-04-09 — `homeCarouselSettings` carousel; UI 3:2 overlay, SVO badge.*
+*Last updated: 2026-04-10 — Sanity `review`, `reviewsQuery` (`sortOrder` / `authorName`), `getReviewsForGrid` + `ReviewsGrid` (12 slots, half-star SVG, a11y labels); Studio **Отзывы**; `PROJECT_ADMIN` отзывы на главной. Prior: 2026-04-09 — `homeCarouselSettings`; 3:2 overlay, SVO badge.*
