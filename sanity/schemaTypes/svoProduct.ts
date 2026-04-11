@@ -6,8 +6,14 @@ export const svoProductType = defineType({
   type: "document",
   fields: [
     defineField({
-      name: "name",
-      title: "Название",
+      name: "brand",
+      title: "Бренд",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "model",
+      title: "Модель",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
@@ -15,7 +21,19 @@ export const svoProductType = defineType({
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: { source: "name", maxLength: 96 },
+      options: {
+        source: (doc) =>
+          [doc.brand, doc.model].filter(Boolean).join(" ").trim(),
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "name",
+      title: "Название",
+      type: "string",
+      description:
+        "Необязательно. На сайте заголовок карточки — «Бренд — Модель»; это поле можно использовать как внутреннюю заметку.",
     }),
     defineField({
       name: "description",
@@ -41,28 +59,30 @@ export const svoProductType = defineType({
       title: "Цена без скидки",
       type: "string",
       description: 'Например: "89 990 ₽"',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "priceDiscount",
       title: "Цена со скидкой",
       type: "string",
       description: 'Например: "78 990 ₽"',
-      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {
     select: {
-      title: "name",
+      brand: "brand",
+      model: "model",
       media: "image",
-      regular: "priceRegular",
-      discount: "priceDiscount",
     },
-    prepare({ title, media, regular, discount }) {
+    prepare({ brand, model, media }) {
+      const b = typeof brand === "string" ? brand.trim() : "";
+      const m = typeof model === "string" ? model.trim() : "";
+      const title =
+        b && m ? `${b} — ${m}` : b || m || "Без названия";
+      const subtitle = [b, m].filter(Boolean).join(" ");
       return {
         title,
+        subtitle: subtitle || undefined,
         media,
-        subtitle: [regular, discount].filter(Boolean).join(" → "),
       };
     },
   },

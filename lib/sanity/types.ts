@@ -9,10 +9,13 @@ export type SanityProductRow = {
   image?: Record<string, unknown> | null;
 };
 
-/** Raw `svoProduct` row returned by `svoProductsQuery` in GROQ. */
+/** Raw `svoProduct` row from `svoProductsQuery` / `svoProductBySlugQuery` in GROQ. */
 export type SanitySvoProductRow = {
   id: string;
   name?: string;
+  brand?: string;
+  model?: string;
+  slug?: string | null;
   description?: string;
   priceRegular?: string;
   priceDiscount?: string;

@@ -6,9 +6,26 @@ export const productsQuery = `*[_type == "product"] | order(sortOrder asc, name 
   image
 }`;
 
-export const svoProductsQuery = `*[_type == "svoProduct"] | order(sortOrder asc, name asc) {
+const publishedSvoFilter = `_type == "svoProduct" && !(_id in path("drafts.**"))`;
+
+export const svoProductsQuery = `*[${publishedSvoFilter}] | order(sortOrder asc, brand asc, model asc) {
   "id": _id,
   name,
+  brand,
+  model,
+  "slug": slug.current,
+  description,
+  priceRegular,
+  priceDiscount,
+  image
+}`;
+
+export const svoProductBySlugQuery = `*[${publishedSvoFilter} && slug.current == $slug][0]{
+  "id": _id,
+  name,
+  brand,
+  model,
+  "slug": slug.current,
   description,
   priceRegular,
   priceDiscount,

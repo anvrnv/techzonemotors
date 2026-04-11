@@ -5,6 +5,12 @@ import { useEffect, useId, useState } from "react";
 import { dispatchOpenContactModal } from "@/lib/contact-modal";
 import type { SvoCatalogProduct } from "@/lib/svo-products";
 
+function svoDisplayTitle(product: SvoCatalogProduct): string {
+  const pair = [product.brand, product.model].filter(Boolean).join(" — ");
+  if (pair) return pair;
+  return "Техника СВО";
+}
+
 function SvoBadge() {
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-700/30 border border-green-600/40 text-green-400 text-[10px] font-bold tracking-wider uppercase">
@@ -18,22 +24,31 @@ function PriceBlock({
   priceDiscount,
   large = false,
 }: {
-  priceRegular: string;
-  priceDiscount: string;
+  priceRegular?: string;
+  priceDiscount?: string;
   large?: boolean;
 }) {
+  const reg = priceRegular?.trim();
+  const disc = priceDiscount?.trim();
+  if (!reg && !disc) {
+    return null;
+  }
   return (
     <div className={`flex items-center gap-2 flex-wrap ${large ? "" : "mt-1"}`}>
-      <span
-        className={`text-zinc-500 line-through ${large ? "text-lg" : "text-xs"}`}
-      >
-        {priceRegular}
-      </span>
-      <span
-        className={`text-green-400 font-bold ${large ? "text-2xl" : "text-base"}`}
-      >
-        {priceDiscount}
-      </span>
+      {reg ? (
+        <span
+          className={`text-zinc-500 line-through ${large ? "text-lg" : "text-xs"}`}
+        >
+          {reg}
+        </span>
+      ) : null}
+      {disc ? (
+        <span
+          className={`text-green-400 font-bold ${large ? "text-2xl" : "text-base"}`}
+        >
+          {disc}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -90,7 +105,7 @@ function ProductModal({
         <div className="relative w-full aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
           <img
             src={product.image}
-            alt={product.name}
+            alt={svoDisplayTitle(product)}
             className="absolute inset-0 z-0 w-full h-full object-cover brightness-110"
           />
           <div className="absolute top-4 left-4 z-20 pointer-events-none">
@@ -103,7 +118,7 @@ function ProductModal({
                   id={titleId}
                   className="text-white font-bold text-2xl leading-snug truncate drop-shadow-sm"
                 >
-                  {product.name}
+                  {svoDisplayTitle(product)}
                 </h3>
                 <p className="text-zinc-200/90 text-sm mt-1 leading-relaxed line-clamp-2 drop-shadow-sm">
                   {product.description}
@@ -197,7 +212,7 @@ export default function SvoPageClient({
               <div className="h-44 overflow-hidden relative">
                 <img
                   src={product.image}
-                  alt={product.name}
+                  alt={svoDisplayTitle(product)}
                   className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-200"
                 />
                 <div className="absolute top-2 left-2">
@@ -207,7 +222,7 @@ export default function SvoPageClient({
 
               <div className="p-4 flex flex-col gap-1">
                 <h3 className="text-white font-semibold text-sm leading-snug line-clamp-1">
-                  {product.name}
+                  {svoDisplayTitle(product)}
                 </h3>
                 <p className="text-zinc-500 text-xs leading-relaxed line-clamp-2">
                   {product.description}

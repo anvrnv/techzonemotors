@@ -192,7 +192,7 @@ async function main() {
           : undefined);
       if (!remoteUrl) {
         console.error(
-          `В режиме --with-remote-images нет URL для «${p.name}» (нужен seedRemoteImageUrl или абсолютный image).`,
+          `В режиме --with-remote-images нет URL для ${p.slug} (${p.brand} ${p.model}) — нужен seedRemoteImageUrl или абсолютный image.`,
         );
         process.exit(1);
       }
@@ -200,7 +200,10 @@ async function main() {
       try {
         buf = await downloadImageForSeed(remoteUrl);
       } catch (e) {
-        console.error(`Не скачать картинку для «${p.name}»:`, e);
+        console.error(
+          `Не скачать картинку для ${p.slug} (${p.brand} ${p.model}):`,
+          e,
+        );
         process.exit(1);
       }
       const ext = extFromUrl(remoteUrl);
@@ -215,11 +218,10 @@ async function main() {
     await client.createOrReplace({
       _id,
       _type: "svoProduct",
-      name: p.name,
+      brand: p.brand,
+      model: p.model,
+      slug: { _type: "slug", current: p.slug },
       description: p.description,
-      priceRegular: p.priceRegular,
-      priceDiscount: p.priceDiscount,
-      slug: { _type: "slug", current: `svo-item-${i + 1}` },
       sortOrder: i,
       image: {
         _type: "image",
@@ -228,10 +230,13 @@ async function main() {
           _ref: assetRef,
         },
       },
+      ...(p.name ? { name: p.name } : {}),
+      ...(p.priceRegular ? { priceRegular: p.priceRegular } : {}),
+      ...(p.priceDiscount ? { priceDiscount: p.priceDiscount } : {}),
     });
 
     n += 1;
-    console.log(`OK ${_id}: ${p.name}`);
+    console.log(`OK ${_id}: ${p.brand} — ${p.model} (${p.slug})`);
   }
 
   console.log(`Готово: ${n} позиций СВО в dataset «${dataset}».`);

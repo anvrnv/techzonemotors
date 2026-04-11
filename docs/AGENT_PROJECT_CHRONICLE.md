@@ -69,7 +69,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `sanity/schemaTypes/blockContent.ts` | Shared Portable Text type `blockContent` (blocks, headings, lists, marks, links, images) for article body |
 | `sanity/schemaTypes/homeCarouselSettings.ts` | Document type `homeCarouselSettings`: ordered array of references to `product` (Studio title **Карусель главной**) |
 | `sanity/schemaTypes/product.ts` | Document type `product`: name, slug, description, price (string), image, sortOrder |
-| `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: name, slug, description, image (hotspot), sortOrder, `priceRegular`, `priceDiscount` |
+| `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: required `brand`, `model`, `slug` (slug source from brand+model), `image` (hotspot); optional `name` (internal note; site title is «Бренд — Модель»), `description`, optional string prices `priceRegular` / `priceDiscount`; `sortOrder`; Studio preview shows «Бренд — Модель» |
 | `sanity/schemaTypes/article.ts` | Document type `article`: title, slug, excerpt (SEO/list, max 300), sortOrder, body (`blockContent`) |
 | `sanity/schemaTypes/review.ts` | Document type `review` (Studio **Отзыв**): `authorName`, `text`, `ratingTen` (integer 0–10), `sortOrder`; Studio ordering **Порядок, затем имя**; preview truncates `text` in subtitle |
 
@@ -82,14 +82,14 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `lib/products.ts` | `getCatalogProducts()`, exported `mapSanityProductRows()`: Sanity fetch → map images via `urlForImage`; fallback to `products-fallback` if no projectId / error / empty |
 | `lib/home-carousel.ts` | `getHomeCarouselProducts()`: fetches singleton `homeCarouselSettings` via `homeCarouselSettingsQuery`, maps with `mapSanityProductRows`; falls back to `getCatalogProducts()` when unset, empty, or on error / no client |
 | `lib/products-fallback.ts` | Static fallback catalog for offline / missing Sanity |
-| `lib/svo-products.ts` | `getSvoCatalogProducts()`, `SvoCatalogProduct`; Sanity fetch for `/svo` with fallback |
-| `lib/svo-products-fallback.ts` | Static SVO catalog fallback (ids `fallback-svo-1` …) |
+| `lib/svo-products.ts` | `getSvoCatalogProducts()`, `getSvoProductBySlug(slug)`, `SvoCatalogProduct` (`brand`, `model`, `slug`, optional `name` / `priceRegular` / `priceDiscount`); maps `SanitySvoProductRow` via `svoProductsQuery` / `svoProductBySlugQuery` or `lib/svo-products-fallback.ts` |
+| `lib/svo-products-fallback.ts` | Static SVO fallback: **9** items with unique `slug`, `brand`, `model`, optional prices; `SvoFallbackRow`; `seedRemoteImageUrl` for seed script `--with-remote-images` |
 | `lib/contact-modal.ts` | `OPEN_CONTACT_MODAL_EVENT` and `dispatchOpenContactModal()` for client components |
 | `lib/sanity/env.ts` | `apiVersion`, `dataset`, `projectId`, `resolveProjectIdForSanityTools()`, placeholder for missing id |
 | `lib/sanity/client.ts` | `getSanityClient()` — `next-sanity` `createClient`, CDN, null if no `projectId` |
 | `lib/sanity/image.ts` | `urlForImage` using `@sanity/image-url` |
-| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); `svoProductsQuery` (`svoProduct`); `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter `!(_id in path("drafts.**"))`; `reviewsQuery` — published `review`, `order(sortOrder asc, authorName asc)`, slice `[0...12]`, projects `"id": _id` and fields |
-| `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`, `SanitySvoProductRow`, `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (uses `PortableTextBlock` from `@portabletext/types`); `SanityReviewRow` for home reviews grid |
+| `lib/sanity/queries.ts` | GROQ `productsQuery` (`product`); SVO: `svoProductsQuery` and `svoProductBySlugQuery` on published `svoProduct` only (`!(_id in path("drafts.**"))`), order `sortOrder asc, brand asc, model asc`, project `slug.current` as `slug` plus brand/model/prices; `homeCarouselSettingsQuery` (singleton `homeCarouselSettings`, dereferences `items` to product rows); article queries `articlesListQuery`, `articleSlugsQuery`, `articleBySlugQuery` with published filter; `reviewsQuery` — published `review`, `order(sortOrder asc, authorName asc)`, slice `[0...12]`, projects `"id": _id` and fields |
+| `lib/sanity/types.ts` | TypeScript shapes: `SanityProductRow`; `SanitySvoProductRow` (brand, model, slug, optional name/description/prices, image); `SanityHomeCarouselSettingsRow`; articles: `SanityArticleListRow`, `SanityArticleDetail` (`PortableTextBlock`); `SanityReviewRow` |
 | `lib/reviews.ts` | `ReviewData`, `getReviewsForGrid()`: `reviewsQuery` → map valid rows (trim strings, integer `ratingTen` 0–10), skip invalid, pad to **12** with `null`; no client / error → 12× `null` |
 | `lib/articles.ts` | `getArticlesList()`, `getArticleBySlug(slug)`, `getArticleSlugs()` — Sanity fetch via queries above; empty/null client → empty / not found |
 
@@ -107,7 +107,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
 | `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
-| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: cards with `SvoBadge` top-left (`z-20`); product modal matches catalog (3:2 + overlay, `max-h-[90vh]` scroll, dialog a11y, Escape); CTA via `dispatchOpenContactModal` |
+| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: card/modal title **«Бренд — Модель»**; optional `priceRegular` / `priceDiscount` when set; `SvoBadge` top-left (`z-20`); modal matches catalog (3:2 + overlay, `max-h-[90vh]` scroll, dialog a11y, Escape); CTA via `dispatchOpenContactModal` |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
@@ -131,7 +131,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 |------|------|
 | `scripts/bootstrap-env.ts` | Loads `.env.local` + `.env`; exports `REPO_ROOT`, `getSanityWriteEnv()` |
 | `scripts/seed-sanity-catalog.ts` | Seeds Sanity from `fallbackCatalogProducts`; requires write token; optional `--with-remote-images` |
-| `scripts/seed-sanity-svo.ts` | Seeds `svoProduct` from `lib/svo-products-fallback.ts`; same env/token pattern as catalog seed; optional `--with-remote-images` |
+| `scripts/seed-sanity-svo.ts` | Seeds `svoProduct` from `lib/svo-products-fallback.ts` (brand, model, slug, optional name/prices, image); same env/token pattern as catalog seed; optional `--with-remote-images` |
 
 ### Deploy (`deploy/`)
 
@@ -187,7 +187,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 1. **Home carousel + reviews:** Server `app/page.tsx` runs `Promise.all` of `getHomeCarouselProducts()` and `getReviewsForGrid()`. **Carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). **Reviews:** `getReviewsForGrid()` in `lib/reviews.ts` → `reviewsQuery` (published `review`, max 12, `sortOrder` then `authorName`) → skip invalid rows → pad to 12 with `null`. `HomeClient` passes `reviews` to `ReviewsGrid`.
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
-3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → Sanity `svoProductsQuery` or `lib/svo-products-fallback.ts` (ISR `revalidate = 60` on `app/svo/page.tsx`).
+3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → published-only `svoProductsQuery` (no drafts) or **9-item** `lib/svo-products-fallback.ts` with slugs (ISR `revalidate = 60` on `app/svo/page.tsx`). Same module exports `getSvoProductBySlug` → `svoProductBySlugQuery` or fallback by `slug`. `SvoPageClient` shows «Бренд — Модель» and optional prices.
 4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
 5. **Contact:** Client posts to `/api/contact` → Telegram → DB `Lead`.
 6. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`, **Статьи** `article`, **Отзывы** `review`).
@@ -201,9 +201,9 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 - **Sanity `review`:** customer reviews for the home grid (`authorName`, `text`, `ratingTen` 0–10, `sortOrder`) — see `sanity/schemaTypes/review.ts`; Studio **Отзывы**; `reviewsQuery` matches `sortOrder` / `authorName`; site shows stars as `ratingTen / 2` (half stars in UI); `"id": _id` for React keys.
 - **Sanity `homeCarouselSettings`:** singleton document id `homeCarouselSettings`; ordered references to `product` for the home carousel — see `sanity/schemaTypes/homeCarouselSettings.ts`.
 - **Sanity `product`:** see `sanity/schemaTypes/product.ts`.
-- **Sanity `svoProduct`:** see `sanity/schemaTypes/svoProduct.ts` (separate Studio list from catalog).
+- **Sanity `svoProduct`:** required `brand`, `model`, `slug`, `image`; optional `name`, `description`, `priceRegular`, `priceDiscount`, `sortOrder` — see `sanity/schemaTypes/svoProduct.ts` (separate Studio list from catalog). GROQ: published filter + list and by-slug queries in `lib/sanity/queries.ts`.
 - **Prisma `Lead`:** see `prisma/schema.prisma`.
 
 ---
 
-*Last updated: 2026-04-10 — Sanity `review`, `reviewsQuery` (`sortOrder` / `authorName`), `getReviewsForGrid` + `ReviewsGrid` (12 slots, half-star SVG, a11y labels); Studio **Отзывы**; `PROJECT_ADMIN` отзывы на главной. Prior: 2026-04-09 — `homeCarouselSettings`; 3:2 overlay, SVO badge.*
+*Last updated: 2026-04-12 — SVO `svoProduct` schema: required brand, model, slug, image; optional prices; GROQ published filter, `svoProductBySlugQuery`; `SanitySvoProductRow` / `getSvoProductBySlug`; fallback **9** slugs; seed script aligned; `/svo` UI «Бренд — Модель» + optional prices. Prior: 2026-04-10 — `review` / `ReviewsGrid`; 2026-04-09 — `homeCarouselSettings`; SVO badge.*
