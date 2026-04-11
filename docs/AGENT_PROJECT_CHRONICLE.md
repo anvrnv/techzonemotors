@@ -69,7 +69,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `sanity/schemaTypes/blockContent.ts` | Shared Portable Text type `blockContent` (blocks, headings, lists, marks, links, images) for article body |
 | `sanity/schemaTypes/homeCarouselSettings.ts` | Document type `homeCarouselSettings`: ordered array of references to `product` (Studio title **Карусель главной**) |
 | `sanity/schemaTypes/product.ts` | Document type `product`: name, slug, description, price (string), image, sortOrder |
-| `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: required `brand`, `model`, `slug` (slug source from brand+model), `image` (hotspot); optional `name` (internal note; site title is «Бренд — Модель»), `description`, optional string prices `priceRegular` / `priceDiscount`; `sortOrder`; Studio preview shows «Бренд — Модель» |
+| `sanity/schemaTypes/svoProduct.ts` | Document type `svoProduct`: required `brand`, `model`, `slug` (slug source from brand+model), `image` (hotspot); optional `name` (used by `svoDisplayTitle()` only if brand+model empty), `description`, optional string prices `priceRegular` / `priceDiscount`; `sortOrder`; Studio preview shows «Бренд — Модель» |
 | `sanity/schemaTypes/article.ts` | Document type `article`: title, slug, excerpt (SEO/list, max 300), sortOrder, body (`blockContent`) |
 | `sanity/schemaTypes/review.ts` | Document type `review` (Studio **Отзыв**): `authorName`, `text`, `ratingTen` (integer 0–10), `sortOrder`; Studio ordering **Порядок, затем имя**; preview truncates `text` in subtitle |
 
@@ -82,7 +82,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `lib/products.ts` | `getCatalogProducts()`, exported `mapSanityProductRows()`: Sanity fetch → map images via `urlForImage`; fallback to `products-fallback` if no projectId / error / empty |
 | `lib/home-carousel.ts` | `getHomeCarouselProducts()`: fetches singleton `homeCarouselSettings` via `homeCarouselSettingsQuery`, maps with `mapSanityProductRows`; falls back to `getCatalogProducts()` when unset, empty, or on error / no client |
 | `lib/products-fallback.ts` | Static fallback catalog for offline / missing Sanity |
-| `lib/svo-products.ts` | `getSvoCatalogProducts()`, `getSvoProductBySlug(slug)`, `SvoCatalogProduct` (`brand`, `model`, `slug`, optional `name` / `priceRegular` / `priceDiscount`); maps `SanitySvoProductRow` via `svoProductsQuery` / `svoProductBySlugQuery` or `lib/svo-products-fallback.ts` |
+| `lib/svo-products.ts` | `getSvoCatalogProducts()`, `getSvoProductBySlug(slug)`, `svoDisplayTitle()` (brand — model, else optional `name`, else «Техника СВО»), `SvoCatalogProduct` (`brand`, `model`, `slug`, optional `name` / `priceRegular` / `priceDiscount`); maps `SanitySvoProductRow` via `svoProductsQuery` / `svoProductBySlugQuery` or `lib/svo-products-fallback.ts` |
 | `lib/svo-products-fallback.ts` | Static SVO fallback: **9** items with unique `slug`, `brand`, `model`, optional prices; `SvoFallbackRow`; `seedRemoteImageUrl` for seed script `--with-remote-images` |
 | `lib/contact-modal.ts` | `OPEN_CONTACT_MODAL_EVENT` and `dispatchOpenContactModal()` for client components |
 | `lib/sanity/env.ts` | `apiVersion`, `dataset`, `projectId`, `resolveProjectIdForSanityTools()`, placeholder for missing id |
@@ -106,8 +106,12 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
 | `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
 | `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
-| `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, passes data to client |
-| `app/svo/SvoPageClient.tsx` | Client UI for `/svo`: card/modal title **«Бренд — Модель»**; optional `priceRegular` / `priceDiscount` when set; `SvoBadge` top-left (`z-20`); modal matches catalog (3:2 + overlay, `max-h-[90vh]` scroll, dialog a11y, Escape); CTA via `dispatchOpenContactModal` |
+| `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, renders `SvoPageClient` (server component) |
+| `app/svo/[slug]/page.tsx` | SVO detail: `generateStaticParams` from `getSvoCatalogProducts()`, `generateMetadata` / `notFound` via `getSvoProductBySlug`, `revalidate = 60`; `SvoPageShell`, back link, body copy, `SvoPriceBlock`, `SvoDetailCta` |
+| `app/svo/SvoDetailCta.tsx` | Client CTA button → `dispatchOpenContactModal()` (`lib/contact-modal.ts`) |
+| `app/svo/SvoPageClient.tsx` | Server UI for `/svo` list: `SvoPageShell`; neutral pluralized model count; grid of `Link` to `/svo/[slug]` — image + `svoDisplayTitle` only; no badge, modal, prices, or descriptions on tiles |
+| `app/svo/SvoPageShell.tsx` | Shared SVO layout: `bg-[#0a0a0a]`, vertical stripe overlay (`repeating-linear-gradient`) |
+| `app/svo/SvoPriceBlock.tsx` | Optional `priceRegular` / `priceDiscount` display (strikethrough + accent); returns null if both empty |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
@@ -187,7 +191,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 1. **Home carousel + reviews:** Server `app/page.tsx` runs `Promise.all` of `getHomeCarouselProducts()` and `getReviewsForGrid()`. **Carousel:** `getHomeCarouselProducts()` in `lib/home-carousel.ts` → Sanity `homeCarouselSettingsQuery` (ordered `product` refs on singleton `homeCarouselSettings`) → `mapSanityProductRows`; if missing/empty/error/no client → same path as catalog via `getCatalogProducts()` (including `lib/products-fallback.ts`). **Reviews:** `getReviewsForGrid()` in `lib/reviews.ts` → `reviewsQuery` (published `review`, max 12, `sortOrder` then `authorName`) → skip invalid rows → pad to 12 with `null`. `HomeClient` passes `reviews` to `ReviewsGrid`.
 2. **Catalog page:** `getCatalogProducts()` in `lib/products.ts` → Sanity GROQ or `lib/products-fallback.ts`.
-3. **SVO page (`/svo`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → published-only `svoProductsQuery` (no drafts) or **9-item** `lib/svo-products-fallback.ts` with slugs (ISR `revalidate = 60` on `app/svo/page.tsx`). Same module exports `getSvoProductBySlug` → `svoProductBySlugQuery` or fallback by `slug`. `SvoPageClient` shows «Бренд — Модель» and optional prices.
+3. **SVO (`/svo`, `/svo/[slug]`):** `getSvoCatalogProducts()` in `lib/svo-products.ts` → published-only `svoProductsQuery` (no drafts) or **9-item** `lib/svo-products-fallback.ts` with slugs. **List:** `app/svo/page.tsx` (ISR `revalidate = 60`) → `SvoPageClient` (server) inside `SvoPageShell`: minimal tiles, each `Link` to `/svo/[slug]`, titles from `svoDisplayTitle()`. **Detail:** `getSvoProductBySlug(slug)` → `svoProductBySlugQuery` or fallback; `app/svo/[slug]/page.tsx` — `generateStaticParams`, `generateMetadata`, `notFound` if missing, `revalidate = 60`, shell + `SvoPriceBlock` + client `SvoDetailCta`.
 4. **Articles (`/articles`, `/articles/[slug]`):** `lib/articles.ts` → GROQ list/slug/detail queries (published only, no drafts via `!(_id in path("drafts.**"))`) → list page and detail with `ArticleBody` (`@portabletext/react`); ISR `revalidate = 60`; `generateStaticParams` on detail route.
 5. **Contact:** Client posts to `/api/contact` → Telegram → DB `Lead`.
 6. **Studio:** `/studio` → `NextStudio` + `sanity.config.ts` (lists: home carousel singleton, catalog `product`, SVO `svoProduct`, **Статьи** `article`, **Отзывы** `review`).
@@ -206,4 +210,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-12 — SVO `svoProduct` schema: required brand, model, slug, image; optional prices; GROQ published filter, `svoProductBySlugQuery`; `SanitySvoProductRow` / `getSvoProductBySlug`; fallback **9** slugs; seed script aligned; `/svo` UI «Бренд — Модель» + optional prices. Prior: 2026-04-10 — `review` / `ReviewsGrid`; 2026-04-09 — `homeCarouselSettings`; SVO badge.*
+*Last updated: 2026-04-12 — SVO: `svoDisplayTitle()` in `lib/svo-products.ts`; shared `SvoPageShell` (`#0a0a0a` + stripes); list route server-only grid linking to `/svo/[slug]` (no list modal/prices); `SvoPriceBlock` + `SvoDetailCta` on detail; `app/svo/[slug]/page.tsx` with `generateStaticParams`, `generateMetadata`, `notFound`, ISR 60. Prior same day: `svoProduct` schema / queries / fallback **9** / list «Бренд — Модель»; 2026-04-10 — `review` / `ReviewsGrid`; 2026-04-09 — `homeCarouselSettings`.*

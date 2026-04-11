@@ -1,159 +1,21 @@
-"use client";
+import Link from "next/link";
 
-import { useEffect, useId, useState } from "react";
+import SvoPageShell from "./SvoPageShell";
+import { svoDisplayTitle, type SvoCatalogProduct } from "@/lib/svo-products";
 
-import { dispatchOpenContactModal } from "@/lib/contact-modal";
-import type { SvoCatalogProduct } from "@/lib/svo-products";
-
-function svoDisplayTitle(product: SvoCatalogProduct): string {
-  const pair = [product.brand, product.model].filter(Boolean).join(" — ");
-  if (pair) return pair;
-  return "Техника СВО";
-}
-
-function SvoBadge() {
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-700/30 border border-green-600/40 text-green-400 text-[10px] font-bold tracking-wider uppercase">
-      СВО
-    </span>
-  );
-}
-
-function PriceBlock({
-  priceRegular,
-  priceDiscount,
-  large = false,
-}: {
-  priceRegular?: string;
-  priceDiscount?: string;
-  large?: boolean;
-}) {
-  const reg = priceRegular?.trim();
-  const disc = priceDiscount?.trim();
-  if (!reg && !disc) {
-    return null;
+function modelsForSaleLabel(count: number): string {
+  const n = Math.abs(count) % 100;
+  if (n >= 11 && n <= 14) {
+    return `${count} моделей в продаже`;
   }
-  return (
-    <div className={`flex items-center gap-2 flex-wrap ${large ? "" : "mt-1"}`}>
-      {reg ? (
-        <span
-          className={`text-zinc-500 line-through ${large ? "text-lg" : "text-xs"}`}
-        >
-          {reg}
-        </span>
-      ) : null}
-      {disc ? (
-        <span
-          className={`text-green-400 font-bold ${large ? "text-2xl" : "text-base"}`}
-        >
-          {disc}
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
-function ProductModal({
-  product,
-  onClose,
-  onBuyClick,
-}: {
-  product: SvoCatalogProduct;
-  onClose: () => void;
-  onBuyClick: () => void;
-}) {
-  const titleId = useId();
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-8"
-      style={{ backgroundColor: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Закрыть"
-        className="absolute top-5 right-5 z-[95] min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-black/50 border border-white/20 text-white/70 hover:text-white hover:bg-white/10 transition-all"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path
-            d="M3 3L13 13M13 3L3 13"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
-
-      <div
-        className="w-full max-w-5xl max-h-[90vh] overflow-y-auto overflow-x-hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-      >
-        <div className="relative w-full aspect-[3/2] rounded-2xl overflow-hidden shadow-2xl">
-          <img
-            src={product.image}
-            alt={svoDisplayTitle(product)}
-            className="absolute inset-0 z-0 w-full h-full object-cover brightness-110"
-          />
-          <div className="absolute top-4 left-4 z-20 pointer-events-none">
-            <SvoBadge />
-          </div>
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-6 py-5 md:px-8 md:pb-6 pt-16 md:pt-20">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div className="min-w-0">
-                <h3
-                  id={titleId}
-                  className="text-white font-bold text-2xl leading-snug truncate drop-shadow-sm"
-                >
-                  {svoDisplayTitle(product)}
-                </h3>
-                <p className="text-zinc-200/90 text-sm mt-1 leading-relaxed line-clamp-2 drop-shadow-sm">
-                  {product.description}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 shrink-0 justify-end">
-                <PriceBlock
-                  priceRegular={product.priceRegular}
-                  priceDiscount={product.priceDiscount}
-                  large
-                />
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-full border border-white text-white text-sm font-medium hover:bg-white hover:text-black transition-all duration-200 whitespace-nowrap"
-                  onClick={onClose}
-                >
-                  Подробнее
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-full bg-green-500 text-white text-sm font-semibold hover:bg-green-400 active:scale-95 transition-all duration-200 whitespace-nowrap"
-                  onClick={() => {
-                    onClose();
-                    onBuyClick();
-                  }}
-                >
-                  Купить
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const n1 = count % 10;
+  if (n1 === 1) {
+    return `${count} модель в продаже`;
+  }
+  if (n1 >= 2 && n1 <= 4) {
+    return `${count} модели в продаже`;
+  }
+  return `${count} моделей в продаже`;
 }
 
 export default function SvoPageClient({
@@ -161,89 +23,47 @@ export default function SvoPageClient({
 }: {
   products: SvoCatalogProduct[];
 }) {
-  const [selected, setSelected] = useState<SvoCatalogProduct | null>(null);
-
-  const openModal = (product: SvoCatalogProduct) => setSelected(product);
-  const closeModal = () => setSelected(null);
-  const openContactModal = () => {
-    closeModal();
-    dispatchOpenContactModal();
-  };
-
   return (
-    <div className="bg-[#111111] min-h-screen">
-      <div className="w-full bg-gradient-to-r from-green-900/40 via-[#111111] to-[#111111] border-b border-green-800/30">
-        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <SvoBadge />
-              <span className="text-zinc-500 text-xs">Специальные условия</span>
-            </div>
-            <h1 className="text-white text-3xl font-bold tracking-tight mb-1">
-              Техника для СВО
-            </h1>
-            <p className="text-zinc-400 text-sm max-w-xl">
-              Специальные цены для участников специальной военной операции.
-              Скидка <span className="text-green-400 font-semibold">12%</span> на
-              весь ассортимент при предъявлении соответствующих документов.
-            </p>
-          </div>
-          <button
-            onClick={() => dispatchOpenContactModal()}
-            className="shrink-0 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all active:scale-95"
-          >
-            Узнать подробнее
-          </button>
+    <SvoPageShell>
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-16">
+        <header className="mb-10">
+          <h1 className="text-white text-3xl font-bold tracking-tight">
+            Техника для СВО
+          </h1>
+          <p className="text-zinc-500 text-sm mt-3">
+            {modelsForSaleLabel(products.length)}
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+          {products.map((product) => {
+            const title = svoDisplayTitle(product);
+            return (
+              <Link
+                key={product.id}
+                href={`/svo/${product.slug}`}
+                aria-label={title}
+                className="group block rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+              >
+                <article className="h-full overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110">
+                  <div className="h-52 min-h-[13rem] flex items-center justify-center px-2 py-4">
+                    <img
+                      src={product.image}
+                      alt=""
+                      className="max-h-full w-full object-contain"
+                    />
+                  </div>
+                  <div className="pt-1 pb-2">
+                    <p className="text-white text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] leading-snug line-clamp-2">
+                      {title}
+                    </p>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <p className="text-zinc-500 text-sm mb-8">
-          {products.length} моделей со скидкой для участников СВО
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.map((product) => (
-            <button
-              key={product.id}
-              onClick={() => openModal(product)}
-              className="group text-left bg-zinc-800/70 border border-white/5 rounded-xl overflow-hidden hover:border-green-700/40 hover:bg-zinc-800 hover:scale-[1.02] hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-700/40"
-            >
-              <div className="h-44 overflow-hidden relative">
-                <img
-                  src={product.image}
-                  alt={svoDisplayTitle(product)}
-                  className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-200"
-                />
-                <div className="absolute top-2 left-2">
-                  <SvoBadge />
-                </div>
-              </div>
-
-              <div className="p-4 flex flex-col gap-1">
-                <h3 className="text-white font-semibold text-sm leading-snug line-clamp-1">
-                  {svoDisplayTitle(product)}
-                </h3>
-                <p className="text-zinc-500 text-xs leading-relaxed line-clamp-2">
-                  {product.description}
-                </p>
-                <PriceBlock
-                  priceRegular={product.priceRegular}
-                  priceDiscount={product.priceDiscount}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {selected && (
-        <ProductModal
-          product={selected}
-          onClose={closeModal}
-          onBuyClick={openContactModal}
-        />
-      )}
-    </div>
+    </SvoPageShell>
   );
 }
