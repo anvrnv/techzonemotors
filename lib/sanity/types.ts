@@ -9,7 +9,7 @@ export type SanityProductRow = {
   image?: Record<string, unknown> | null;
 };
 
-/** Raw `svoProduct` row from `svoProductsQuery` / `svoProductBySlugQuery` in GROQ. */
+/** Raw `svoProduct` row from `svoProductsQuery` in GROQ (list; lean). */
 export type SanitySvoProductRow = {
   id: string;
   name?: string;
@@ -20,6 +20,16 @@ export type SanitySvoProductRow = {
   priceRegular?: string;
   priceDiscount?: string;
   image?: Record<string, unknown> | null;
+};
+
+/** Raw `svoProduct` row from `svoProductBySlugQuery` (detail; includes specs). */
+export type SanitySvoProductDetailRow = SanitySvoProductRow & {
+  specTorque?: string;
+  specFuelConsumption?: string;
+  specMaxSpeed?: string;
+  specVolume?: string;
+  dimensionLength?: string;
+  dimensionHeight?: string;
 };
 
 /** Singleton `homeCarouselSettings` row from `homeCarouselSettingsQuery`. */

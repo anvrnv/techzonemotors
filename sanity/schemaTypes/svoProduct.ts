@@ -66,6 +66,36 @@ export const svoProductType = defineType({
       type: "string",
       description: 'Например: "78 990 ₽"',
     }),
+    defineField({
+      name: "specTorque",
+      title: "Крутящий момент",
+      type: "string",
+    }),
+    defineField({
+      name: "specFuelConsumption",
+      title: "Расход",
+      type: "string",
+    }),
+    defineField({
+      name: "specMaxSpeed",
+      title: "Макс. скорость",
+      type: "string",
+    }),
+    defineField({
+      name: "specVolume",
+      title: "Объём",
+      type: "string",
+    }),
+    defineField({
+      name: "dimensionLength",
+      title: "Длина",
+      type: "string",
+    }),
+    defineField({
+      name: "dimensionHeight",
+      title: "Высота",
+      type: "string",
+    }),
   ],
   preview: {
     select: {

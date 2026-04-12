@@ -233,6 +233,14 @@ async function main() {
       ...(p.name ? { name: p.name } : {}),
       ...(p.priceRegular ? { priceRegular: p.priceRegular } : {}),
       ...(p.priceDiscount ? { priceDiscount: p.priceDiscount } : {}),
+      ...(p.specTorque ? { specTorque: p.specTorque } : {}),
+      ...(p.specFuelConsumption
+        ? { specFuelConsumption: p.specFuelConsumption }
+        : {}),
+      ...(p.specMaxSpeed ? { specMaxSpeed: p.specMaxSpeed } : {}),
+      ...(p.specVolume ? { specVolume: p.specVolume } : {}),
+      ...(p.dimensionLength ? { dimensionLength: p.dimensionLength } : {}),
+      ...(p.dimensionHeight ? { dimensionHeight: p.dimensionHeight } : {}),
     });
 
     n += 1;

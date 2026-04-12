@@ -16,6 +16,12 @@ export type SvoFallbackRow = {
   priceDiscount?: string;
   image: string;
   seedRemoteImageUrl?: string;
+  specTorque?: string;
+  specFuelConsumption?: string;
+  specMaxSpeed?: string;
+  specVolume?: string;
+  dimensionLength?: string;
+  dimensionHeight?: string;
 };
 
 export const fallbackSvoProducts: SvoFallbackRow[] = [
@@ -31,6 +37,12 @@ export const fallbackSvoProducts: SvoFallbackRow[] = [
     image: DEFAULT_CATALOG_IMAGE_URL,
     seedRemoteImageUrl:
       "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=900&q=85",
+    specTorque: "10,5 Н·м @ 5500 об/мин",
+    specFuelConsumption: "2,1 л/100 км",
+    specMaxSpeed: "75 км/ч",
+    specVolume: "140 см³",
+    dimensionLength: "1600 мм",
+    dimensionHeight: "960 мм",
   },
   {
     id: "fallback-svo-2",
@@ -44,6 +56,12 @@ export const fallbackSvoProducts: SvoFallbackRow[] = [
     image: DEFAULT_CATALOG_IMAGE_URL,
     seedRemoteImageUrl:
       "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=900&q=85",
+    specTorque: "8,2 Н·м",
+    specFuelConsumption: "1,9 л/100 км",
+    specMaxSpeed: "65 км/ч",
+    specVolume: "125 см³",
+    dimensionLength: "1540 мм",
+    dimensionHeight: "920 мм",
   },
   {
     id: "fallback-svo-3",

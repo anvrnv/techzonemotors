@@ -7,7 +7,11 @@ import {
   svoProductBySlugQuery,
   svoProductsQuery,
 } from "@/lib/sanity/queries";
-import type { SanitySvoProductRow } from "@/lib/sanity/types";
+import type {
+  SanitySvoProductDetailRow,
+  SanitySvoProductRow,
+} from "@/lib/sanity/types";
+import type { SvoFallbackRow } from "@/lib/svo-products-fallback";
 
 export type SvoCatalogProduct = {
   id: string;
@@ -19,6 +23,15 @@ export type SvoCatalogProduct = {
   priceRegular?: string;
   priceDiscount?: string;
   image: string;
+};
+
+export type SvoDetailProduct = SvoCatalogProduct & {
+  specTorque?: string;
+  specFuelConsumption?: string;
+  specMaxSpeed?: string;
+  specVolume?: string;
+  dimensionLength?: string;
+  dimensionHeight?: string;
 };
 
 export function svoDisplayTitle(
@@ -45,18 +58,39 @@ function simpleSlug(s: string): string {
   return cleaned;
 }
 
-function mapFallbackRows(rows: typeof fallbackSvoProducts): SvoCatalogProduct[] {
-  return rows.map((row) => ({
+function optionalTrimmed(s: string | undefined): string | undefined {
+  const t = s?.trim();
+  return t ? t : undefined;
+}
+
+function mapFallbackRowToCatalog(row: SvoFallbackRow): SvoCatalogProduct {
+  return {
     id: row.id,
     slug: row.slug,
     brand: row.brand,
     model: row.model,
     ...(row.name ? { name: row.name } : {}),
     description: row.description,
-    priceRegular: row.priceRegular,
-    priceDiscount: row.priceDiscount,
+    priceRegular: optionalTrimmed(row.priceRegular),
+    priceDiscount: optionalTrimmed(row.priceDiscount),
     image: row.image,
-  }));
+  };
+}
+
+function mapFallbackRowToDetail(row: SvoFallbackRow): SvoDetailProduct {
+  return {
+    ...mapFallbackRowToCatalog(row),
+    specTorque: optionalTrimmed(row.specTorque),
+    specFuelConsumption: optionalTrimmed(row.specFuelConsumption),
+    specMaxSpeed: optionalTrimmed(row.specMaxSpeed),
+    specVolume: optionalTrimmed(row.specVolume),
+    dimensionLength: optionalTrimmed(row.dimensionLength),
+    dimensionHeight: optionalTrimmed(row.dimensionHeight),
+  };
+}
+
+function mapFallbackRows(rows: typeof fallbackSvoProducts): SvoCatalogProduct[] {
+  return rows.map((row) => mapFallbackRowToCatalog(row));
 }
 
 function sanityRowHasImageAsset(
@@ -106,6 +140,50 @@ function mapSanityRows(rows: SanitySvoProductRow[]): SvoCatalogProduct[] {
   return out;
 }
 
+function mapSanityRowToDetail(
+  row: SanitySvoProductDetailRow,
+): SvoDetailProduct | null {
+  const nameOpt = row.name?.trim();
+  const brand = row.brand?.trim() ?? "";
+  const model = row.model?.trim() ?? "";
+  const slugRaw = row.slug?.trim() ?? "";
+  const hasName = Boolean(nameOpt);
+  const hasImageAsset = sanityRowHasImageAsset(row.image);
+  const hasCore = Boolean(brand && model && slugRaw && hasImageAsset);
+  if (!hasName && !hasCore) {
+    return null;
+  }
+
+  const imageUrl =
+    urlForImage(row.image ?? undefined, 1200) ?? DEFAULT_CATALOG_IMAGE_URL;
+
+  const slug =
+    slugRaw ||
+    simpleSlug(nameOpt || `${brand}-${model}`) ||
+    row.id.replace(/^drafts\./, "");
+
+  const pr = row.priceRegular?.trim();
+  const pd = row.priceDiscount?.trim();
+
+  return {
+    id: row.id,
+    slug,
+    brand,
+    model,
+    ...(nameOpt ? { name: nameOpt } : {}),
+    description: row.description?.trim() ?? "",
+    priceRegular: pr || undefined,
+    priceDiscount: pd || undefined,
+    image: imageUrl,
+    specTorque: optionalTrimmed(row.specTorque),
+    specFuelConsumption: optionalTrimmed(row.specFuelConsumption),
+    specMaxSpeed: optionalTrimmed(row.specMaxSpeed),
+    specVolume: optionalTrimmed(row.specVolume),
+    dimensionLength: optionalTrimmed(row.dimensionLength),
+    dimensionHeight: optionalTrimmed(row.dimensionHeight),
+  };
+}
+
 export async function getSvoCatalogProducts(): Promise<SvoCatalogProduct[]> {
   if (!projectId) {
     return mapFallbackRows(fallbackSvoProducts);
@@ -130,7 +208,7 @@ export async function getSvoCatalogProducts(): Promise<SvoCatalogProduct[]> {
 
 export async function getSvoProductBySlug(
   slug: string,
-): Promise<SvoCatalogProduct | null> {
+): Promise<SvoDetailProduct | null> {
   const normalized = slug.trim();
   if (!normalized) {
     return null;
@@ -140,12 +218,12 @@ export async function getSvoProductBySlug(
     const client = getSanityClient();
     if (client) {
       try {
-        const row = await client.fetch<SanitySvoProductRow | null>(
+        const row = await client.fetch<SanitySvoProductDetailRow | null>(
           svoProductBySlugQuery,
           { slug: normalized },
         );
         if (row) {
-          const [one] = mapSanityRows([row]);
+          const one = mapSanityRowToDetail(row);
           if (one) {
             return one;
           }
@@ -156,6 +234,6 @@ export async function getSvoProductBySlug(
     }
   }
 
-  const fromFallback = mapFallbackRows(fallbackSvoProducts);
-  return fromFallback.find((p) => p.slug === normalized) ?? null;
+  const row = fallbackSvoProducts.find((p) => p.slug === normalized);
+  return row ? mapFallbackRowToDetail(row) : null;
 }

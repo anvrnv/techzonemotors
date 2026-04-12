@@ -29,6 +29,12 @@ export const svoProductBySlugQuery = `*[${publishedSvoFilter} && slug.current ==
   description,
   priceRegular,
   priceDiscount,
+  specTorque,
+  specFuelConsumption,
+  specMaxSpeed,
+  specVolume,
+  dimensionLength,
+  dimensionHeight,
   image
 }`;
 
