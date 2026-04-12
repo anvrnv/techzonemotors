@@ -16,14 +16,14 @@ export default function SvoPriceBlock({
   }
 
   const sizeClass = large
-    ? "text-xl font-bold tracking-tight sm:text-2xl"
-    : "text-base font-bold tracking-tight";
+    ? "text-sm font-bold uppercase leading-snug tracking-[0.2em] sm:text-base"
+    : "text-xs font-bold uppercase leading-snug tracking-[0.2em] sm:text-sm";
 
   return (
     <div
       className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${large ? "" : "mt-1"}`}
     >
-      <span className={`whitespace-nowrap text-orange-400 ${sizeClass}`}>
+      <span className={`whitespace-nowrap text-white ${sizeClass}`}>
         {display}
       </span>
     </div>

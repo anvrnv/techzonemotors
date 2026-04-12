@@ -65,49 +65,51 @@ export default async function SvoProductPage({ params }: Props) {
       <div className="mx-auto flex w-full max-w-7xl flex-1 min-h-0 flex-col px-6 py-10 lg:mx-0 lg:max-w-none lg:px-8 lg:py-8 xl:px-12">
         <SvoDetailHeader product={product} showSpecsAnchor={hasSpecsRow} />
 
-        <div className="mt-2 grid min-w-0 gap-10 lg:mt-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,22rem)] lg:items-stretch lg:gap-12 xl:grid-cols-[minmax(0,1.45fr)_minmax(17rem,24rem)]">
-          <div className="min-w-0">
-            <SvoDetailHero
-              imageUrl={product.image}
-              imageAlt={imageAccessibleTitle}
-              dimensionLength={product.dimensionLength}
-              dimensionHeight={product.dimensionHeight}
-            />
-          </div>
-
-          <div className="flex min-w-0 flex-col gap-8 lg:flex-1 lg:min-h-0 lg:pt-1">
-            {description ? (
-              <p className="m-0 text-base leading-relaxed text-zinc-400 whitespace-pre-wrap">
-                {description}
-              </p>
-            ) : null}
-
-            <div className="flex flex-col gap-6 lg:mt-auto">
-              <SvoPriceBlock
-                priceRegular={product.priceRegular}
-                priceDiscount={product.priceDiscount}
-                large
+        <div className="flex flex-1 min-h-0 flex-col">
+          <div className="mt-2 grid min-w-0 gap-10 lg:mt-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,22rem)] lg:items-stretch lg:gap-12 xl:grid-cols-[minmax(0,1.45fr)_minmax(17rem,24rem)]">
+            <div className="min-w-0">
+              <SvoDetailHero
+                imageUrl={product.image}
+                imageAlt={imageAccessibleTitle}
+                dimensionLength={product.dimensionLength}
+                dimensionHeight={product.dimensionHeight}
               />
-              <SvoDetailCta />
+            </div>
+
+            <div className="flex min-w-0 flex-col gap-8 lg:flex-1 lg:min-h-0 lg:pt-1">
+              {description ? (
+                <p className="m-0 text-base leading-relaxed text-zinc-400 whitespace-pre-wrap">
+                  {description}
+                </p>
+              ) : null}
+
+              <div className="flex flex-col gap-6 lg:mt-auto">
+                <SvoPriceBlock
+                  priceRegular={product.priceRegular}
+                  priceDiscount={product.priceDiscount}
+                  large
+                />
+                <SvoDetailCta />
+              </div>
             </div>
           </div>
-        </div>
 
-        {hasSpecsRow ? (
-          <section
-            id="svo-specs"
-            tabIndex={-1}
-            aria-label="Технические данные"
-            className="scroll-mt-24 mt-14 pt-10 outline-none lg:mt-16 lg:pt-12"
-          >
-            <SvoSpecsRow
-              specTorque={product.specTorque}
-              specFuelConsumption={product.specFuelConsumption}
-              specMaxSpeed={product.specMaxSpeed}
-              specVolume={product.specVolume}
-            />
-          </section>
-        ) : null}
+          {hasSpecsRow ? (
+            <section
+              id="svo-specs"
+              tabIndex={-1}
+              aria-label="Технические данные"
+              className="mt-auto scroll-mt-24 pt-12 pb-6 outline-none lg:pt-16 lg:pb-8"
+            >
+              <SvoSpecsRow
+                specTorque={product.specTorque}
+                specFuelConsumption={product.specFuelConsumption}
+                specMaxSpeed={product.specMaxSpeed}
+                specVolume={product.specVolume}
+              />
+            </section>
+          ) : null}
+        </div>
       </div>
     </SvoPageShell>
   );

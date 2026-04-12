@@ -39,7 +39,7 @@ export function svoDisplayTitle(
 ): string {
   const brand = product.brand?.trim() ?? "";
   const model = product.model?.trim() ?? "";
-  const pair = [brand, model].filter(Boolean).join(" — ");
+  const pair = [brand, model].filter(Boolean).join(" / ");
   if (pair) return pair;
   const name = "name" in product ? product.name?.trim() : "";
   if (name) return name;

@@ -8,7 +8,7 @@ type Props = {
 };
 
 const itemClass =
-  "text-xs font-normal uppercase leading-snug tracking-[0.2em] text-zinc-300 sm:text-sm";
+  "text-sm font-normal uppercase leading-snug tracking-[0.2em] text-zinc-300 sm:text-base md:text-lg";
 
 export default function SvoSpecsRow({
   specTorque,
