@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "prisma generate",
     "sanity:seed-catalog": "tsx --tsconfig tsconfig.json scripts/seed-sanity-catalog.ts",
-    "sanity:seed-svo": "tsx --tsconfig tsconfig.json scripts/seed-sanity-svo.ts"
+    "sanity:seed-svo": "tsx --tsconfig tsconfig.json scripts/seed-sanity-svo.ts",
+    "measure:svo-layout": "tsx --tsconfig tsconfig.json scripts/measure-svo-layout.ts"
   },
   "dependencies": {
     "@portabletext/react": "^3.2.4",
@@ -35,6 +36,7 @@
     "eslint-config-next": "16.2.1",
     "prisma": "^7",
     "tailwindcss": "^4",
+    "playwright": "^1.51.0",
     "tsx": "^4.19.0",
     "typescript": "^5"
   }

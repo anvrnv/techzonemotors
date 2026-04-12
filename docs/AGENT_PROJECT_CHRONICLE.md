@@ -43,8 +43,9 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `package.json` | Scripts: `dev`, `build` (= `prisma generate && next build`), `start`, `lint`, `postinstall` (= `prisma generate`), `sanity:seed-catalog`, `sanity:seed-svo`; dependency `@portabletext/react` (article body UI) |
+| `package.json` | Scripts: `dev`, `build` (= `prisma generate && next build`), `start`, `lint`, `postinstall` (= `prisma generate`), `sanity:seed-catalog`, `sanity:seed-svo`, **`measure:svo-layout`** (`scripts/measure-svo-layout.ts`, Playwright Chromium); devDependency **`playwright`**; dependency `@portabletext/react` (article body UI) |
 | `package-lock.json` | Locked dependencies |
+| `scripts/measure-svo-layout.ts` | Playwright: `getBoundingClientRect` + key computed styles for `[data-svo-measure]` on `/svo`; env **`SVO_LAYOUT_URL`** (default `http://127.0.0.1:3000/svo`), **`SVO_VIEWPORT_W`**, **`SVO_VIEWPORT_H`** |
 | `tsconfig.json` | TypeScript; path alias `@/*` → repo root |
 | `next.config.ts` | Next config; `images.remotePatterns` for `cdn.sanity.io` |
 | `eslint.config.mjs` | ESLint flat config |
@@ -112,8 +113,8 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/svo/SvoDetailHero.tsx` | Hero: `next/image` (`fill`, `sizes`, `priority`), `object-contain`; `imageAlt` from detail title; optional dimension overlay (SVG + labels) when length/height from CMS |
 | `app/svo/SvoSpecsRow.tsx` | Horizontal row of CMS-driven spec chips/labels |
 | `app/svo/SvoDetailCta.tsx` | Client CTA button → `dispatchOpenContactModal()` (`lib/contact-modal.ts`) |
-| `app/svo/SvoPageClient.tsx` | Server UI for `/svo` list: `SvoPageShell`; inner wrapper **`max-w-7xl` only below `lg`**; **`lg:max-w-none`** + **`lg:px-8`** / **`xl:px-12`** so **3-column grid spans full viewport width**; **`lg:min-h-[calc(100dvh-7.5rem)]`** (comment: Navbar **`h-16`** + main **`pt-14`**; tighter shell/header padding after removing subtitle so **`flex-1`** grid uses more of **`100dvh`**); centered **`h1`** (**`text-center`** header); **no** model-count subtitle; **`shrink-0`** page header; grid **`flex-1 min-h-0`**, **`lg:grid-cols-3`**; **`>= 4`** products → **`1fr`/`1fr`/`auto`** row template; **`2–3`** → one **`1fr`** row; **`Link`/`article`** **`h-full min-h-0 flex flex-col`**; image **`flex-1 min-h-0`** or **`clamp`**; single → **`lg:col-span-3`** + **`max-w-4xl mx-auto`**; `next/image` **`sizes`** includes **`34vw`** for desktop third; caption + **`svoTileAccessibleText()`** |
-| `app/svo/SvoPageShell.tsx` | Shared SVO layout: `bg-[#0a0a0a]`, vertical stripe overlay (`repeating-linear-gradient`) |
+| `app/svo/SvoPageClient.tsx` | Server UI for `/svo` list: `SvoPageShell`; **`data-svo-measure`** on column/header/title/grid and per-tile (`card-link-N`, `card-article-N`, `card-image-N`, `card-caption-N`) for **`scripts/measure-svo-layout.ts`**; inner wrapper **`max-w-7xl` only below `lg`**; **`lg:max-w-none`** + **`lg:px-8`** / **`xl:px-12`** so **3-column grid spans full viewport width**; **`lg:min-h-[calc(100dvh-7.5rem)]`** (comment: Navbar **`h-16`** + main **`pt-14`**; tighter shell/header padding after removing subtitle so **`flex-1`** grid uses more of **`100dvh`**); centered **`h1`** (**`text-center`** header); **no** model-count subtitle; **`shrink-0`** page header; grid **`flex-1 min-h-0`**, **`lg:grid-cols-3`**; **`>= 4`** products → **`1fr`/`1fr`/`auto`** row template; **`2–3`** → one **`1fr`** row; **`Link`/`article`** **`h-full min-h-0 flex flex-col`**; image **`flex-1 min-h-0`** or **`clamp`**; single → **`lg:col-span-3`** + **`max-w-4xl mx-auto`**; `next/image` **`sizes`** includes **`34vw`** for desktop third; caption + **`svoTileAccessibleText()`** |
+| `app/svo/SvoPageShell.tsx` | Shared SVO layout: **`data-svo-measure="shell-root"`**; `bg-[#0a0a0a]`, vertical stripe overlay (`repeating-linear-gradient`) |
 | `app/svo/SvoPriceBlock.tsx` | Optional `priceRegular` / `priceDiscount` display (strikethrough + accent); returns null if both empty |
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
@@ -170,6 +171,8 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | Path | Role |
 |------|------|
 | `docs/PROJECT_ADMIN.md` | Russian admin / secrets; architecture includes home **Отзывы** (`review`); **Изображения СВО** — checkerboard in SVO photos = bad raster alpha, fix by replacing asset in Sanity (`/svo` dark bg); section **Пошагово** — GitHub Actions, Sanity Open Studio (в т.ч. шаг 6: **Карусель главной** — порядок ссылок на `product`), `/studio` + `.env.local` на VPS |
+| `docs/svo-layout-measured-1440x900.md` | Sample Playwright layout dump for `/svo` at viewport **1440×900** (regenerate: `npm run measure:svo-layout` with app running; env `SVO_LAYOUT_URL`, `SVO_VIEWPORT_W`, `SVO_VIEWPORT_H`) |
+| `docs/svo-layout-measured-1920x1080.md` | Same at **1920×1080** |
 | `docs/AGENT_PROJECT_CHRONICLE.md` | This file |
 
 ### Other root files
@@ -213,4 +216,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-12 — **SVO list (`SvoPageClient`):** **`lg:max-w-none`** + horizontal padding so **3-column grid uses full viewport width** on desktop; keep **`lg:grid-cols-3`**, **`lg:min-h-[calc(100dvh-7.5rem)]`** (nav **`h-16`** + main **`pt-14`**; tighter padding, no model-count line); **centered `h1`**; rows **`1fr`/`1fr`/`auto`** when **`>=4`** products; **`2–3`** → one **`1fr`** row; tile **`flex`** + image **`flex-1 min-h-0`**; single → `lg:col-span-3` + `max-w-4xl`. **SVO raster / alpha guidance:** `svoProduct` `image` field Studio `description` (RU: real alpha PNG/WebP, no checkerboard baked in); `docs/PROJECT_ADMIN.md` subsection **Изображения СВО** (diagnosis, `/svo` dark page). Same day earlier: SVO **block E / finish:** list + detail hero **`next/image`** (`fill` + `sizes`); SVO list density (lg, ~900px, 2×3 tiles); detail CMS specs + dimensions; seed/fallback on 1–2 slugs; `svoProduct` schema / queries / fallback **9**; 2026-04-10 — `review` / `ReviewsGrid`; 2026-04-09 — `homeCarouselSettings`.*
+*Last updated: 2026-04-12 — **`data-svo-measure`** + **`scripts/measure-svo-layout.ts`** (Playwright, string `evaluate` to avoid tsx `__name` in browser) + **`measure:svo-layout`**; sample dumps `docs/svo-layout-measured-1440x900.md`, `docs/svo-layout-measured-1920x1080.md`. **SVO list (`SvoPageClient`):** **`lg:max-w-none`** + horizontal padding (full-width grid on desktop); **`lg:grid-cols-3`**, **`lg:min-h-[calc(100dvh-7.5rem)]`**; **centered `h1`**; rows **`1fr`/`1fr`/`auto`** when **`>=4`**; tile **`flex`** + image **`flex-1 min-h-0`**. **SVO raster / alpha:** `docs/PROJECT_ADMIN.md` **Изображения СВО**. Earlier same month: SVO **`next/image`** detail/list; `svoProduct` schema / fallback **9**; 2026-04-10 — `ReviewsGrid`; 2026-04-09 — `homeCarouselSettings`.*

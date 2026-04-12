@@ -2,7 +2,10 @@ import type { ReactNode } from "react";
 
 export default function SvoPageShell({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen text-white bg-[#0a0a0a]">
+    <div
+      className="relative min-h-screen text-white bg-[#0a0a0a]"
+      data-svo-measure="shell-root"
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.45]"
         aria-hidden

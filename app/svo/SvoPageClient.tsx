@@ -31,21 +31,31 @@ export default function SvoPageClient({
         верх вьюпорта; без подзаголовка счётчика ужали lg-отступы шапки/обёртки — больше бюджета высоты у
         сетки (flex-1 min-h-0). Первые два lg-ряда при ≥4 товарах — 1fr/1fr; дальше auto.
       */}
-      <div className="mx-auto w-full max-w-7xl px-6 pt-8 pb-12 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-3 lg:pb-4 [@media(min-height:900px)]:lg:pt-2.5 [@media(min-height:900px)]:lg:pb-3.5">
-        <header className="shrink-0 mb-6 text-center lg:mb-3 [@media(min-height:900px)]:lg:mb-2.5">
-          <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem] mx-auto max-w-prose">
+      <div
+        className="mx-auto w-full max-w-7xl px-6 pt-8 pb-12 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-3 lg:pb-4 [@media(min-height:900px)]:lg:pt-2.5 [@media(min-height:900px)]:lg:pb-3.5"
+        data-svo-measure="page-column"
+      >
+        <header
+          className="shrink-0 mb-6 text-center lg:mb-3 [@media(min-height:900px)]:lg:mb-2.5"
+          data-svo-measure="page-header"
+        >
+          <h1
+            className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem] mx-auto max-w-prose"
+            data-svo-measure="page-title"
+          >
             Техника для СВО
           </h1>
         </header>
 
         <div
+          data-svo-measure="product-grid"
           className={`grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-x-3 lg:gap-y-2.5 [@media(min-height:900px)]:lg:gap-y-2 ${
             lgTwoFractionalRows
               ? "lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)_auto]"
               : ""
           } ${lgOneFractionalRow ? "lg:grid-rows-[minmax(0,1fr)]" : ""}`}
         >
-          {products.map((product) => {
+          {products.map((product, index) => {
             const label = svoTileAccessibleText(product);
             const brand = product.brand?.trim() ?? "";
             const model = product.model?.trim() ?? "";
@@ -62,6 +72,7 @@ export default function SvoPageClient({
                 key={product.id}
                 href={`/svo/${product.slug}`}
                 aria-label={label}
+                data-svo-measure={`card-link-${index}`}
                 className={`group flex h-full min-h-0 flex-col rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] ${
                   single ? "lg:col-span-3" : ""
                 }`}
@@ -70,8 +81,12 @@ export default function SvoPageClient({
                   className={`flex h-full min-h-0 flex-col overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110 ${
                     single ? "max-w-4xl mx-auto w-full" : ""
                   }`}
+                  data-svo-measure={`card-article-${index}`}
                 >
-                  <div className={imageShell}>
+                  <div
+                    className={imageShell}
+                    data-svo-measure={`card-image-${index}`}
+                  >
                     <Image
                       src={product.image}
                       alt={label}
@@ -84,7 +99,10 @@ export default function SvoPageClient({
                       className="object-contain object-center"
                     />
                   </div>
-                  <div className="pt-1 pb-2 px-1">
+                  <div
+                    className="pt-1 pb-2 px-1"
+                    data-svo-measure={`card-caption-${index}`}
+                  >
                     <p className="text-center text-white text-[11px] sm:text-xs tracking-[0.2em] leading-snug line-clamp-2">
                       {showSplit ? (
                         <>
