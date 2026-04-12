@@ -40,7 +40,7 @@ export default function SvoPageClient({
           data-svo-measure="page-header"
         >
           <h1
-            className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem] mx-auto max-w-prose"
+            className="mx-auto text-center text-white text-[11px] font-normal uppercase leading-snug tracking-[0.2em] sm:text-xs"
             data-svo-measure="page-title"
           >
             Техника для СВО
