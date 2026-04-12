@@ -27,16 +27,16 @@ export default function SvoPageClient({
   return (
     <SvoPageShell>
       {/*
-        Минимальная высота колонки под viewport: Navbar h-16 (4rem) + main pt-14 (3.5rem) = 7.5rem «съедают»
-        верх вьюпорта; без подзаголовка счётчика ужали lg-отступы шапки/обёртки — больше бюджета высоты у
-        сетки (flex-1 min-h-0). Первые два lg-ряда при ≥4 товарах — 1fr/1fr; дальше auto.
+        Высота колонки: flex-1 min-h-0 в цепочке main → обёртка /svo → SvoPageShell (навбар fixed, в потоке
+        не съедает main — не дублируем его в min-h). Сетка flex-1 тянется на всё под заголовком; при ≥4
+        товарах первые два lg-ряда — 1fr/1fr (делят дополнительную высоту поровну), третий — auto.
       */}
       <div
-        className="mx-auto w-full max-w-7xl px-6 pt-8 pb-12 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-3 lg:pb-4 [@media(min-height:900px)]:lg:pt-2.5 [@media(min-height:900px)]:lg:pb-3.5"
+        className="mx-auto flex w-full max-w-7xl flex-1 min-h-0 flex-col px-6 pt-8 pb-12 lg:mx-0 lg:max-w-none lg:px-8 lg:pt-9 lg:pb-4 xl:px-12 [@media(min-height:900px)]:lg:pb-3.5"
         data-svo-measure="page-column"
       >
         <header
-          className="shrink-0 mb-6 text-center lg:mb-3 [@media(min-height:900px)]:lg:mb-2.5"
+          className="mb-6 shrink-0 text-center lg:mb-4"
           data-svo-measure="page-header"
         >
           <h1

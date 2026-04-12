@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 export default function SvoPageShell({ children }: { children: ReactNode }) {
   return (
     <div
-      className="relative min-h-screen text-white bg-[#0a0a0a]"
+      className="relative flex min-h-0 flex-1 flex-col bg-[#0a0a0a] text-white"
       data-svo-measure="shell-root"
     >
       <div
@@ -19,7 +19,7 @@ export default function SvoPageShell({ children }: { children: ReactNode }) {
           )`,
         }}
       />
-      <div className="relative z-[1]">{children}</div>
+      <div className="relative z-[1] flex min-h-0 flex-1 flex-col">{children}</div>
     </div>
   );
 }
