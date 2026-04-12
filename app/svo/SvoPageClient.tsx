@@ -33,12 +33,20 @@ export default function SvoPageClient({
   products: SvoCatalogProduct[];
 }) {
   const single = products.length === 1;
+  const n = products.length;
+  /** ≥4 товаров в 3 колонки → минимум 2 ряда; делим оставшуюся высоту экрана пополам между 1-м и 2-м рядом. */
+  const lgTwoFractionalRows = n >= 4;
+  /** 2–3 товара: один ряд на lg, но тянем его на доступную высоту под шапкой страницы. */
+  const lgOneFractionalRow = n >= 2 && n <= 3;
 
   return (
     <SvoPageShell>
-      {/* ~900px tall viewport: tighter header + gaps so 6 tiles + navbar fit without scroll; slightly smaller h1 vs default lg */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-14 lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
-        <header className="mb-8 lg:mb-4 [@media(min-height:900px)]:lg:mb-3">
+      {/*
+        Высота под фикс-нав (h-16) + main pt-14 ≈ 7.5rem до контента; остальное — шапка /svo и сетка.
+        Сетка flex-1: первые два ряда (по 3 карточки) делят высоту поровну; следующие ряды — auto.
+      */}
+      <div className="max-w-7xl mx-auto px-6 pt-10 pb-14 flex flex-col lg:min-h-[calc(100dvh-7.5rem)] lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
+        <header className="shrink-0 mb-8 lg:mb-4 [@media(min-height:900px)]:lg:mb-3">
           <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem]">
             Техника для СВО
           </h1>
@@ -48,7 +56,11 @@ export default function SvoPageClient({
         </header>
 
         <div
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-x-3 lg:gap-y-2.5 [@media(min-height:900px)]:lg:gap-y-2`}
+          className={`grid flex-1 min-h-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-x-3 lg:gap-y-2.5 [@media(min-height:900px)]:lg:gap-y-2 ${
+            lgTwoFractionalRows
+              ? "lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+              : ""
+          } ${lgOneFractionalRow ? "lg:grid-rows-[minmax(0,1fr)]" : ""}`}
         >
           {products.map((product) => {
             const label = svoTileAccessibleText(product);
@@ -58,19 +70,21 @@ export default function SvoPageClient({
 
             const imageShell = single
               ? "relative min-h-[clamp(14rem,22vh,18rem)] lg:min-h-[clamp(17rem,min(32vh,22rem),22rem)] px-2 py-4 lg:py-5"
-              : "relative min-h-[clamp(14rem,22vh,18rem)] lg:min-h-[clamp(14rem,min(28vh,18rem),18rem)] px-2 py-4 lg:py-3 [@media(min-height:900px)]:lg:py-2.5";
+              : lgTwoFractionalRows || lgOneFractionalRow
+                ? "relative flex-1 min-h-[10rem] lg:min-h-0 px-2 py-4 lg:py-3 [@media(min-height:900px)]:lg:py-2.5"
+                : "relative min-h-[clamp(14rem,22vh,18rem)] lg:min-h-[clamp(14rem,min(28vh,18rem),18rem)] px-2 py-4 lg:py-3 [@media(min-height:900px)]:lg:py-2.5";
 
             return (
               <Link
                 key={product.id}
                 href={`/svo/${product.slug}`}
                 aria-label={label}
-                className={`group block rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] ${
+                className={`group flex h-full min-h-0 flex-col rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] ${
                   single ? "lg:col-span-3" : ""
                 }`}
               >
                 <article
-                  className={`h-full overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110 ${
+                  className={`flex h-full min-h-0 flex-col overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110 ${
                     single ? "max-w-4xl mx-auto w-full" : ""
                   }`}
                 >
