@@ -45,7 +45,7 @@ export default function SvoPageClient({
         Высота под фикс-нав (h-16) + main pt-14 ≈ 7.5rem до контента; остальное — шапка /svo и сетка.
         Сетка flex-1: первые два ряда (по 3 карточки) делят высоту поровну; следующие ряды — auto.
       */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-14 flex flex-col lg:min-h-[calc(100dvh-7.5rem)] lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
+      <div className="mx-auto w-full max-w-7xl px-6 pt-10 pb-14 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
         <header className="shrink-0 mb-8 lg:mb-4 [@media(min-height:900px)]:lg:mb-3">
           <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem]">
             Техника для СВО
@@ -96,7 +96,7 @@ export default function SvoPageClient({
                       sizes={
                         single
                           ? "(max-width: 1024px) 100vw, 56rem"
-                          : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 34vw"
                       }
                       className="object-contain object-center"
                     />
