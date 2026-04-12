@@ -5,6 +5,9 @@ type Props = {
   specVolume?: string;
 };
 
+const specLineClass =
+  "text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400";
+
 export default function SvoSpecsRow({
   specTorque,
   specFuelConsumption,
@@ -28,19 +31,15 @@ export default function SvoSpecsRow({
   }
 
   return (
-    <ul className="m-0 list-none flex flex-wrap items-baseline justify-center gap-y-2 p-0 sm:justify-start">
+    <ul className="m-0 flex list-none flex-wrap items-center justify-center gap-x-6 gap-y-3 p-0 sm:justify-start lg:gap-x-10">
       {entries.map((item) => (
-        <li
-          key={item.label}
-          className="flex items-baseline before:mr-2 before:text-zinc-600 before:text-xs before:leading-none before:content-['·'] first:before:hidden"
-        >
-          <span className="inline-flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-              {item.label}
+        <li key={item.label} className="text-center sm:text-left">
+          <span className={specLineClass}>
+            {item.label}
+            <span className="mx-2 text-zinc-600" aria-hidden>
+              ·
             </span>
-            <span className="text-sm text-zinc-200 sm:mt-0 mt-0.5">
-              {item.value}
-            </span>
+            {item.value}
           </span>
         </li>
       ))}

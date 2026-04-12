@@ -22,7 +22,7 @@ export default function SvoDetailHeader({
             Назад
           </Link>
         </div>
-        <h1 className="text-center text-white text-lg sm:text-xl md:text-2xl font-bold tracking-tight truncate px-2">
+        <h1 className="mx-auto max-w-full truncate px-2 text-center text-[11px] font-normal uppercase leading-snug tracking-[0.2em] text-white sm:text-xs">
           {title}
         </h1>
         <div className="justify-self-end min-w-0">

@@ -13,17 +13,17 @@ export default function SvoPriceBlock({
     return null;
   }
   return (
-    <div className={`flex items-center gap-2 flex-wrap ${large ? "" : "mt-1"}`}>
+    <div className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${large ? "" : "mt-1"}`}>
       {reg ? (
         <span
-          className={`text-zinc-500 line-through ${large ? "text-lg" : "text-xs"}`}
+          className={`text-zinc-500 line-through ${large ? "text-base" : "text-xs"}`}
         >
           {reg}
         </span>
       ) : null}
       {disc ? (
         <span
-          className={`text-green-400 font-bold ${large ? "text-2xl" : "text-base"}`}
+          className={`font-semibold tracking-tight text-zinc-100 ${large ? "text-2xl" : "text-base"}`}
         >
           {disc}
         </span>

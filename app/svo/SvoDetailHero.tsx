@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useId } from "react";
 
 type Props = {
   imageUrl: string;
@@ -15,112 +18,165 @@ export default function SvoDetailHero({
 }: Props) {
   const L = dimensionLength?.trim();
   const H = dimensionHeight?.trim();
-  const showOverlay = Boolean(L || H);
+  const gid = useId();
+  const gradH = `${gid}-dim-h`;
+  const gradV = `${gid}-dim-v`;
+  const dimRailClass = "w-11 shrink-0 sm:w-12";
 
   return (
-    <div className="relative w-full rounded-lg border border-white/[0.08] bg-black/30 overflow-hidden">
-      <div className="relative flex min-h-[min(45vh,360px)] h-[min(48vh,400px)] max-h-[min(52vh,440px)] w-full items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
-        <Image
-          src={imageUrl}
-          alt={imageAlt}
-          fill
-          priority
-          sizes="(max-width: 896px) 100vw, 896px"
-          className="object-contain object-center"
-        />
-      </div>
+    <div className="relative w-full bg-[#0a0a0a]">
+      <div className="flex w-full flex-col">
+        <div className="flex h-[min(48vh,400px)] max-h-[min(52vh,440px)] min-h-[min(36vh,260px)] w-full min-h-0 flex-row">
+          <div className="relative min-h-0 min-w-0 flex-1">
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 65vw"
+              className="object-contain object-center"
+            />
+          </div>
 
-      {showOverlay ? (
-        <div className="pointer-events-none absolute inset-0 flex items-stretch justify-stretch">
-          <svg
-            className="h-full w-full text-zinc-500/85"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-            aria-hidden
-            focusable="false"
-          >
-            {L ? (
-              <>
-                <line
-                  x1="12%"
-                  y1="86%"
-                  x2="88%"
-                  y2="86%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-                <line
-                  x1="12%"
-                  y1="84%"
-                  x2="12%"
-                  y2="88%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-                <line
-                  x1="88%"
-                  y1="84%"
-                  x2="88%"
-                  y2="88%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-              </>
-            ) : null}
-            {H ? (
-              <>
-                <line
-                  x1="90%"
-                  y1="14%"
-                  x2="90%"
-                  y2="72%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-                <line
-                  x1="88%"
-                  y1="14%"
-                  x2="92%"
-                  y2="14%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-                <line
-                  x1="88%"
-                  y1="72%"
-                  x2="92%"
-                  y2="72%"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                  vectorEffect="nonScalingStroke"
-                />
-              </>
-            ) : null}
-          </svg>
-
-          {L ? (
-            <div className="absolute left-1/2 bottom-[6%] -translate-x-1/2 text-center">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Длина
-              </p>
-              <p className="text-xs text-zinc-300 mt-0.5 tabular-nums">{L}</p>
-            </div>
-          ) : null}
           {H ? (
-            <div className="absolute right-[3%] top-1/2 -translate-y-1/2 text-right">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Высота
-              </p>
-              <p className="text-xs text-zinc-300 mt-1 tabular-nums">{H}</p>
+            <div className={`relative ${dimRailClass}`}>
+              <svg
+                className="absolute inset-0 h-full w-full text-zinc-500"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="none"
+                aria-hidden
+                focusable="false"
+              >
+                <defs>
+                  <linearGradient
+                    id={gradV}
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="currentColor" stopOpacity="0" />
+                    <stop
+                      offset="50%"
+                      stopColor="currentColor"
+                      stopOpacity="0.95"
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor="currentColor"
+                      stopOpacity="0"
+                    />
+                  </linearGradient>
+                </defs>
+                <line
+                  x1="35%"
+                  y1="6%"
+                  x2="35%"
+                  y2="94%"
+                  stroke={`url(#${gradV})`}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+                <line
+                  x1="22%"
+                  y1="6%"
+                  x2="48%"
+                  y2="6%"
+                  stroke="currentColor"
+                  strokeOpacity={0.45}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+                <line
+                  x1="22%"
+                  y1="94%"
+                  x2="48%"
+                  y2="94%"
+                  stroke="currentColor"
+                  strokeOpacity={0.45}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+              </svg>
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center py-6">
+                <p className="max-h-[85%] text-balance text-center text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400 [writing-mode:vertical-rl] rotate-180">
+                  {H}
+                </p>
+              </div>
             </div>
           ) : null}
         </div>
-      ) : null}
+
+        {L ? (
+          <div className="flex w-full min-w-0 flex-row">
+            <div className="relative h-12 min-w-0 flex-1 sm:h-14">
+              <svg
+                className="absolute inset-0 h-full w-full text-zinc-500"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                <defs>
+                  <linearGradient
+                    id={gradH}
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%"
+                  >
+                    <stop offset="0%" stopColor="currentColor" stopOpacity="0" />
+                    <stop
+                      offset="50%"
+                      stopColor="currentColor"
+                      stopOpacity="0.95"
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor="currentColor"
+                      stopOpacity="0"
+                    />
+                  </linearGradient>
+                </defs>
+                <line
+                  x1="4%"
+                  y1="35%"
+                  x2="96%"
+                  y2="35%"
+                  stroke={`url(#${gradH})`}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+                <line
+                  x1="4%"
+                  y1="22%"
+                  x2="4%"
+                  y2="48%"
+                  stroke="currentColor"
+                  strokeOpacity={0.45}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+                <line
+                  x1="96%"
+                  y1="22%"
+                  x2="96%"
+                  y2="48%"
+                  stroke="currentColor"
+                  strokeOpacity={0.45}
+                  strokeWidth={1}
+                  vectorEffect="nonScalingStroke"
+                />
+              </svg>
+              <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-0.5 sm:pb-1">
+                <p className="text-balance text-center text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400">
+                  {L}
+                </p>
+              </div>
+            </div>
+            {H ? <div className={dimRailClass} aria-hidden /> : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
