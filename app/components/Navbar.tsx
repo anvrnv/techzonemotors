@@ -7,6 +7,16 @@ import { dispatchOpenContactModal } from "@/lib/contact-modal";
 
 const openContact = () => dispatchOpenContactModal();
 
+/** Same line as SVO tile captions (`SvoPageClient`): caps, wide tracking, not heavy. */
+const navCaption =
+  "font-normal uppercase leading-snug tracking-[0.2em] text-[11px] sm:text-xs";
+
+const navLinkInactive =
+  "rounded-md px-3.5 py-1.5 text-white/60 transition-all duration-150 hover:bg-white/10 hover:text-white whitespace-nowrap";
+
+const navLinkMobile =
+  "rounded-md px-3 py-2.5 text-white/70 transition-all hover:bg-white/10 hover:text-white";
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -15,45 +25,40 @@ export default function Navbar() {
       <nav className="relative max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
         {/* Left — logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-            <span className="text-white text-xs font-bold tracking-tight">TZ</span>
+        <Link
+          href="/"
+          className="group flex shrink-0 items-center gap-2.5"
+          aria-label="TechZone Motors — на главную"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white/10 transition-colors group-hover:bg-white/20">
+            <span className={`text-white ${navCaption}`}>TZ</span>
           </div>
-          <span className="text-white font-semibold text-sm tracking-tight hidden sm:inline">
-            TechZone Motors
+          <span className={`hidden text-white sm:inline ${navCaption}`}>
+            TECHZONEMOTORS
           </span>
         </Link>
 
         {/* Center — navigation links, absolutely centered */}
         <ul className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           <li>
-            <Link
-              href="/"
-              className="px-3.5 py-1.5 rounded-md text-[13px] font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all duration-150 whitespace-nowrap"
-            >
+            <Link href="/" className={`${navCaption} ${navLinkInactive}`}>
               Главная
             </Link>
           </li>
           <li>
-            <Link
-              href="/catalog"
-              className="px-3.5 py-1.5 rounded-md text-[13px] font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all duration-150 whitespace-nowrap"
-            >
+            <Link href="/catalog" className={`${navCaption} ${navLinkInactive}`}>
               Каталог товаров
             </Link>
           </li>
           <li>
-            <Link
-              href="/svo"
-              className="px-3.5 py-1.5 rounded-md text-[13px] font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all duration-150 whitespace-nowrap"
-            >
+            <Link href="/svo" className={`${navCaption} ${navLinkInactive}`}>
               Техника для СВО
             </Link>
           </li>
           <li>
             <Link
               href="/articles"
-              className="px-3.5 py-1.5 rounded-md text-[13px] font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all duration-150 whitespace-nowrap inline-block"
+              className={`${navCaption} ${navLinkInactive} inline-block`}
             >
               Статьи
             </Link>
@@ -65,14 +70,14 @@ export default function Navbar() {
 
           <a
             href="tel:+79998414936"
-            className="text-white/80 hover:text-white text-sm font-medium tracking-wide transition-colors"
+            className={`${navCaption} tabular-nums text-white/80 transition-colors hover:text-white`}
           >
             +7 (999) 841-49-36
           </a>
           <button
             type="button"
             onClick={openContact}
-            className="px-4 py-1.5 rounded-full bg-white text-[#1a1a1a] text-[13px] font-semibold hover:bg-white/90 active:scale-95 transition-all duration-150"
+            className={`rounded-full bg-white px-4 py-1.5 font-semibold text-[#1a1a1a] transition-all duration-150 hover:bg-white/90 active:scale-95 ${navCaption}`}
           >
             Купить
           </button>
@@ -98,36 +103,39 @@ export default function Navbar() {
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className="px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className={`${navCaption} ${navLinkMobile}`}
           >
             Главная
           </Link>
           <Link
             href="/catalog"
             onClick={() => setMobileOpen(false)}
-            className="px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className={`${navCaption} ${navLinkMobile}`}
           >
             Каталог товаров
           </Link>
           <Link
             href="/svo"
             onClick={() => setMobileOpen(false)}
-            className="px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className={`${navCaption} ${navLinkMobile}`}
           >
             Техника для СВО
           </Link>
           <Link
             href="/articles"
             onClick={() => setMobileOpen(false)}
-            className="px-3 py-2.5 rounded-md text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all"
+            className={`${navCaption} ${navLinkMobile}`}
           >
             Статьи
           </Link>
 
           <button
             type="button"
-            onClick={() => { setMobileOpen(false); openContact(); }}
-            className="mt-2 px-4 py-2 rounded-full bg-white text-[#1a1a1a] text-sm font-semibold text-center hover:bg-white/90 transition-all"
+            onClick={() => {
+              setMobileOpen(false);
+              openContact();
+            }}
+            className={`mt-2 w-full rounded-full bg-white px-4 py-2 text-center font-semibold text-[#1a1a1a] transition-all hover:bg-white/90 ${navCaption}`}
           >
             Купить
           </button>
