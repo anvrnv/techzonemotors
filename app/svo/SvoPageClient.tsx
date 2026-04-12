@@ -4,21 +4,6 @@ import Link from "next/link";
 import SvoPageShell from "./SvoPageShell";
 import { svoDisplayTitle, type SvoCatalogProduct } from "@/lib/svo-products";
 
-function modelsForSaleLabel(count: number): string {
-  const n = Math.abs(count) % 100;
-  if (n >= 11 && n <= 14) {
-    return `${count} моделей в продаже`;
-  }
-  const n1 = count % 10;
-  if (n1 === 1) {
-    return `${count} модель в продаже`;
-  }
-  if (n1 >= 2 && n1 <= 4) {
-    return `${count} модели в продаже`;
-  }
-  return `${count} моделей в продаже`;
-}
-
 /** Matches visible caption: "brand / model" when both set, else display title. */
 function svoTileAccessibleText(product: SvoCatalogProduct): string {
   const brand = product.brand?.trim() ?? "";
@@ -42,17 +27,15 @@ export default function SvoPageClient({
   return (
     <SvoPageShell>
       {/*
-        Высота под фикс-нав (h-16) + main pt-14 ≈ 7.5rem до контента; остальное — шапка /svo и сетка.
-        Сетка flex-1: первые два ряда (по 3 карточки) делят высоту поровну; следующие ряды — auto.
+        Минимальная высота колонки под viewport: Navbar h-16 (4rem) + main pt-14 (3.5rem) = 7.5rem «съедают»
+        верх вьюпорта; без подзаголовка счётчика ужали lg-отступы шапки/обёртки — больше бюджета высоты у
+        сетки (flex-1 min-h-0). Первые два lg-ряда при ≥4 товарах — 1fr/1fr; дальше auto.
       */}
-      <div className="mx-auto w-full max-w-7xl px-6 pt-10 pb-14 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
-        <header className="shrink-0 mb-8 lg:mb-4 [@media(min-height:900px)]:lg:mb-3">
-          <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem]">
+      <div className="mx-auto w-full max-w-7xl px-6 pt-8 pb-12 flex flex-col lg:max-w-none lg:mx-0 lg:px-8 xl:px-12 lg:min-h-[calc(100dvh-7.5rem)] lg:pt-3 lg:pb-4 [@media(min-height:900px)]:lg:pt-2.5 [@media(min-height:900px)]:lg:pb-3.5">
+        <header className="shrink-0 mb-6 text-center lg:mb-3 [@media(min-height:900px)]:lg:mb-2.5">
+          <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem] mx-auto max-w-prose">
             Техника для СВО
           </h1>
-          <p className="text-zinc-500 text-sm mt-3 lg:mt-2 lg:text-xs [@media(min-height:900px)]:lg:mt-1.5">
-            {modelsForSaleLabel(products.length)}
-          </p>
         </header>
 
         <div
