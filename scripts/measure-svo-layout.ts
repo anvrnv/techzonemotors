@@ -147,10 +147,10 @@ async function main() {
       `| ${m.main?.paddingTop != null ? num(m.main.paddingTop) : "—"} | main padding-top | pt-14 под навбар |`,
     );
     lines.push(
-      `| ${m.shell?.height != null ? num(m.shell.height) : "—"} | shell-root | SvoPageShell min-h-screen |`,
+      `| ${m.shell?.height != null ? num(m.shell.height) : "—"} | shell-root | SvoPageShell flex-1 min-h-0 flex-col (высота от цепочки) |`,
     );
     lines.push(
-      `| ${m.pageColumn?.height != null ? num(m.pageColumn.height) : "—"} | page-column | обёртка flex + min-h |`,
+      `| ${m.pageColumn?.height != null ? num(m.pageColumn.height) : "—"} | page-column | flex-1 min-h-0 flex-col |`,
     );
     lines.push(
       `| ${m.pageColumn?.paddingTop != null ? num(m.pageColumn.paddingTop) : "—"} | page-column padding-top | |`,
