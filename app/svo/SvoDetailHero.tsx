@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type Props = {
   imageUrl: string;
   imageAlt: string;
@@ -17,11 +19,14 @@ export default function SvoDetailHero({
 
   return (
     <div className="relative w-full rounded-lg border border-white/[0.08] bg-black/30 overflow-hidden">
-      <div className="flex min-h-[min(45vh,360px)] max-h-[min(52vh,440px)] items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
-        <img
+      <div className="relative flex min-h-[min(45vh,360px)] h-[min(48vh,400px)] max-h-[min(52vh,440px)] w-full items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
+        <Image
           src={imageUrl}
           alt={imageAlt}
-          className="max-h-[min(42vh,400px)] w-full object-contain"
+          fill
+          priority
+          sizes="(max-width: 896px) 100vw, 896px"
+          className="object-contain object-center"
         />
       </div>
 

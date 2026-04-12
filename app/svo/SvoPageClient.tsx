@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import SvoPageShell from "./SvoPageShell";
@@ -47,11 +48,13 @@ export default function SvoPageClient({
                 className="group block rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
               >
                 <article className="h-full overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110">
-                  <div className="h-52 min-h-[13rem] flex items-center justify-center px-2 py-4 lg:min-h-0 lg:h-[9rem] lg:py-3 [@media(min-height:900px)]:lg:h-[8.25rem]">
-                    <img
+                  <div className="relative h-52 min-h-[13rem] px-2 py-4 lg:min-h-0 lg:h-[9rem] lg:py-3 [@media(min-height:900px)]:lg:h-[8.25rem]">
+                    <Image
                       src={product.image}
-                      alt=""
-                      className="max-h-full w-full object-contain"
+                      alt={title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-contain object-center"
                     />
                   </div>
                   <div className="pt-1 pb-2">
