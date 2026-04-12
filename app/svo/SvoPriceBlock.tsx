@@ -9,25 +9,23 @@ export default function SvoPriceBlock({
 }) {
   const reg = priceRegular?.trim();
   const disc = priceDiscount?.trim();
-  if (!reg && !disc) {
+
+  const display = disc ?? reg;
+  if (!display) {
     return null;
   }
+
+  const sizeClass = large
+    ? "text-xl font-bold tracking-tight sm:text-2xl"
+    : "text-base font-bold tracking-tight";
+
   return (
-    <div className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${large ? "" : "mt-1"}`}>
-      {reg ? (
-        <span
-          className={`text-zinc-500 line-through ${large ? "text-base" : "text-xs"}`}
-        >
-          {reg}
-        </span>
-      ) : null}
-      {disc ? (
-        <span
-          className={`font-semibold tracking-tight text-zinc-100 ${large ? "text-2xl" : "text-base"}`}
-        >
-          {disc}
-        </span>
-      ) : null}
+    <div
+      className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${large ? "" : "mt-1"}`}
+    >
+      <span className={`whitespace-nowrap text-orange-400 ${sizeClass}`}>
+        {display}
+      </span>
     </div>
   );
 }

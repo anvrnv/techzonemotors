@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 type Props = {
   specTorque?: string;
   specFuelConsumption?: string;
@@ -5,8 +7,8 @@ type Props = {
   specVolume?: string;
 };
 
-const specLineClass =
-  "text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400";
+const itemClass =
+  "text-xs font-normal uppercase leading-snug tracking-[0.2em] text-zinc-300 sm:text-sm";
 
 export default function SvoSpecsRow({
   specTorque,
@@ -31,17 +33,24 @@ export default function SvoSpecsRow({
   }
 
   return (
-    <ul className="m-0 flex list-none flex-wrap items-center justify-center gap-x-6 gap-y-3 p-0 sm:justify-start lg:gap-x-10">
-      {entries.map((item) => (
-        <li key={item.label} className="text-center sm:text-left">
-          <span className={specLineClass}>
-            {item.label}
-            <span className="mx-2 text-zinc-600" aria-hidden>
+    <ul className="m-0 flex list-none flex-wrap items-center justify-center gap-y-3 p-0">
+      {entries.map((item, index) => (
+        <Fragment key={item.label}>
+          {index > 0 ? (
+            <li
+              className="mx-3 list-none text-zinc-600 select-none sm:mx-4"
+              aria-hidden
+            >
               ·
+            </li>
+          ) : null}
+          <li className="list-none text-center">
+            <span className={itemClass}>
+              <span className="font-bold">{item.label}</span>{" "}
+              <span className="font-normal">{item.value}</span>
             </span>
-            {item.value}
-          </span>
-        </li>
+          </li>
+        </Fragment>
       ))}
     </ul>
   );

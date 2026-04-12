@@ -2,15 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 import SvoPageShell from "./SvoPageShell";
-import { svoDisplayTitle, type SvoCatalogProduct } from "@/lib/svo-products";
-
-/** Matches visible caption: "brand / model" when both set, else display title. */
-function svoTileAccessibleText(product: SvoCatalogProduct): string {
-  const brand = product.brand?.trim() ?? "";
-  const model = product.model?.trim() ?? "";
-  if (brand && model) return `${brand} / ${model}`;
-  return svoDisplayTitle(product);
-}
+import {
+  svoDisplayTitle,
+  svoTileAccessibleText,
+  type SvoCatalogProduct,
+} from "@/lib/svo-products";
 
 export default function SvoPageClient({
   products,

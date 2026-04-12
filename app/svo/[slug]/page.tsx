@@ -11,6 +11,7 @@ import {
   getSvoCatalogProducts,
   getSvoProductBySlug,
   svoDisplayTitle,
+  svoTileAccessibleText,
 } from "@/lib/svo-products";
 
 export const revalidate = 60;
@@ -48,7 +49,7 @@ export default async function SvoProductPage({ params }: Props) {
     notFound();
   }
 
-  const title = svoDisplayTitle(product);
+  const imageAccessibleTitle = svoTileAccessibleText(product);
   const description = product.description?.trim();
   const hasSpecsRow = Boolean(
     [
@@ -62,26 +63,26 @@ export default async function SvoProductPage({ params }: Props) {
   return (
     <SvoPageShell>
       <div className="mx-auto flex w-full max-w-7xl flex-1 min-h-0 flex-col px-6 py-10 lg:mx-0 lg:max-w-none lg:px-8 lg:py-8 xl:px-12">
-        <SvoDetailHeader title={title} showSpecsAnchor={hasSpecsRow} />
+        <SvoDetailHeader product={product} showSpecsAnchor={hasSpecsRow} />
 
-        <div className="mt-2 grid min-w-0 gap-10 lg:mt-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,22rem)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,1.45fr)_minmax(17rem,24rem)]">
+        <div className="mt-2 grid min-w-0 gap-10 lg:mt-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,22rem)] lg:items-stretch lg:gap-12 xl:grid-cols-[minmax(0,1.45fr)_minmax(17rem,24rem)]">
           <div className="min-w-0">
             <SvoDetailHero
               imageUrl={product.image}
-              imageAlt={title}
+              imageAlt={imageAccessibleTitle}
               dimensionLength={product.dimensionLength}
               dimensionHeight={product.dimensionHeight}
             />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-8 lg:pt-1">
+          <div className="flex min-w-0 flex-col gap-8 lg:flex-1 lg:min-h-0 lg:pt-1">
             {description ? (
               <p className="m-0 text-base leading-relaxed text-zinc-400 whitespace-pre-wrap">
                 {description}
               </p>
             ) : null}
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 lg:mt-auto">
               <SvoPriceBlock
                 priceRegular={product.priceRegular}
                 priceDiscount={product.priceDiscount}
@@ -97,7 +98,7 @@ export default async function SvoProductPage({ params }: Props) {
             id="svo-specs"
             tabIndex={-1}
             aria-label="Технические данные"
-            className="scroll-mt-24 mt-14 border-t border-white/[0.08] pt-10 outline-none lg:mt-16 lg:pt-12"
+            className="scroll-mt-24 mt-14 pt-10 outline-none lg:mt-16 lg:pt-12"
           >
             <SvoSpecsRow
               specTorque={product.specTorque}

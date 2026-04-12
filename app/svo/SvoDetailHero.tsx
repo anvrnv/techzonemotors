@@ -21,12 +21,15 @@ export default function SvoDetailHero({
   const gid = useId();
   const gradH = `${gid}-dim-h`;
   const gradV = `${gid}-dim-v`;
-  const dimRailClass = "w-11 shrink-0 sm:w-12";
+  const dimRailClass = "w-12 shrink-0 sm:w-[3.25rem]";
+
+  const lengthLine = L ? `ДЛИНА ${L}` : "";
+  const heightLine = H ? `ВЫСОТА ${H}` : "";
 
   return (
     <div className="relative w-full bg-[#0a0a0a]">
       <div className="flex w-full flex-col">
-        <div className="flex h-[min(48vh,400px)] max-h-[min(52vh,440px)] min-h-[min(36vh,260px)] w-full min-h-0 flex-row">
+        <div className="flex h-[min(58vh,500px)] max-h-[min(64vh,540px)] min-h-[min(44vh,312px)] w-full flex-row gap-4 sm:gap-5">
           <div className="relative min-h-0 min-w-0 flex-1">
             <Image
               src={imageUrl}
@@ -41,7 +44,7 @@ export default function SvoDetailHero({
           {H ? (
             <div className={`relative ${dimRailClass}`}>
               <svg
-                className="absolute inset-0 h-full w-full text-zinc-500"
+                className="absolute inset-0 h-full w-full text-zinc-400"
                 xmlns="http://www.w3.org/2000/svg"
                 preserveAspectRatio="none"
                 aria-hidden
@@ -70,37 +73,37 @@ export default function SvoDetailHero({
                 </defs>
                 <line
                   x1="35%"
-                  y1="6%"
+                  y1="5%"
                   x2="35%"
-                  y2="94%"
+                  y2="95%"
                   stroke={`url(#${gradV})`}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
                 <line
-                  x1="22%"
-                  y1="6%"
-                  x2="48%"
-                  y2="6%"
+                  x1="20%"
+                  y1="5%"
+                  x2="50%"
+                  y2="5%"
                   stroke="currentColor"
-                  strokeOpacity={0.45}
+                  strokeOpacity={0.5}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
                 <line
-                  x1="22%"
-                  y1="94%"
-                  x2="48%"
-                  y2="94%"
+                  x1="20%"
+                  y1="95%"
+                  x2="50%"
+                  y2="95%"
                   stroke="currentColor"
-                  strokeOpacity={0.45}
+                  strokeOpacity={0.5}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
               </svg>
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center py-6">
-                <p className="max-h-[85%] text-balance text-center text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400 [writing-mode:vertical-rl] rotate-180">
-                  {H}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center py-8">
+                <p className="max-h-[88%] whitespace-nowrap text-center text-[11px] font-normal uppercase leading-snug tracking-[0.18em] text-zinc-300 [writing-mode:vertical-rl] rotate-180 sm:text-xs">
+                  {heightLine}
                 </p>
               </div>
             </div>
@@ -108,10 +111,10 @@ export default function SvoDetailHero({
         </div>
 
         {L ? (
-          <div className="flex w-full min-w-0 flex-row">
-            <div className="relative h-12 min-w-0 flex-1 sm:h-14">
+          <div className="mt-4 flex w-full min-w-0 flex-row sm:mt-5">
+            <div className="relative h-14 min-w-0 flex-1 sm:h-16">
               <svg
-                className="absolute inset-0 h-full w-full text-zinc-500"
+                className="absolute inset-0 h-full w-full text-zinc-400"
                 xmlns="http://www.w3.org/2000/svg"
                 preserveAspectRatio="none"
                 aria-hidden
@@ -138,38 +141,38 @@ export default function SvoDetailHero({
                   </linearGradient>
                 </defs>
                 <line
-                  x1="4%"
-                  y1="35%"
-                  x2="96%"
-                  y2="35%"
+                  x1="3%"
+                  y1="38%"
+                  x2="97%"
+                  y2="38%"
                   stroke={`url(#${gradH})`}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
                 <line
-                  x1="4%"
-                  y1="22%"
-                  x2="4%"
-                  y2="48%"
+                  x1="3%"
+                  y1="24%"
+                  x2="3%"
+                  y2="52%"
                   stroke="currentColor"
-                  strokeOpacity={0.45}
+                  strokeOpacity={0.5}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
                 <line
-                  x1="96%"
-                  y1="22%"
-                  x2="96%"
-                  y2="48%"
+                  x1="97%"
+                  y1="24%"
+                  x2="97%"
+                  y2="52%"
                   stroke="currentColor"
-                  strokeOpacity={0.45}
+                  strokeOpacity={0.5}
                   strokeWidth={1}
                   vectorEffect="nonScalingStroke"
                 />
               </svg>
-              <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-0.5 sm:pb-1">
-                <p className="text-balance text-center text-[10px] font-normal uppercase leading-snug tracking-[0.2em] text-zinc-400">
-                  {L}
+              <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-1 sm:pb-1.5">
+                <p className="text-balance text-center text-[11px] font-normal uppercase leading-snug tracking-[0.18em] text-zinc-300 sm:text-xs">
+                  {lengthLine}
                 </p>
               </div>
             </div>

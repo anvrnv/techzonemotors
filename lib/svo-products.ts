@@ -46,6 +46,16 @@ export function svoDisplayTitle(
   return "Техника СВО";
 }
 
+/** Matches visible SVO tile caption for screen readers: «brand / model» when both set. */
+export function svoTileAccessibleText(
+  product: SvoCatalogProduct | { brand: string; model: string; name?: string },
+): string {
+  const brand = product.brand?.trim() ?? "";
+  const model = product.model?.trim() ?? "";
+  if (brand && model) return `${brand} / ${model}`;
+  return svoDisplayTitle(product);
+}
+
 function simpleSlug(s: string): string {
   const t = s
     .toLowerCase()
