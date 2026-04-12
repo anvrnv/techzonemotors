@@ -19,17 +19,27 @@ function modelsForSaleLabel(count: number): string {
   return `${count} моделей в продаже`;
 }
 
+/** Matches visible caption: "brand / model" when both set, else display title. */
+function svoTileAccessibleText(product: SvoCatalogProduct): string {
+  const brand = product.brand?.trim() ?? "";
+  const model = product.model?.trim() ?? "";
+  if (brand && model) return `${brand} / ${model}`;
+  return svoDisplayTitle(product);
+}
+
 export default function SvoPageClient({
   products,
 }: {
   products: SvoCatalogProduct[];
 }) {
+  const single = products.length === 1;
+
   return (
     <SvoPageShell>
-      {/* ~900px viewport height: fit navbar (h-16) + main pt-14 + header + 2 rows × 3 cols = 6 tiles in max-w-7xl without page scroll; further rows scroll normally */}
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-16 lg:pt-5 lg:pb-6 [@media(min-height:900px)]:lg:pt-4 [@media(min-height:900px)]:lg:pb-5">
-        <header className="mb-10 lg:mb-5 [@media(min-height:900px)]:lg:mb-4">
-          <h1 className="text-white text-3xl font-bold tracking-tight lg:text-2xl [@media(min-height:900px)]:lg:text-[1.375rem]">
+      {/* ~900px tall viewport: tighter header + gaps so 6 tiles + navbar fit without scroll; slightly smaller h1 vs default lg */}
+      <div className="max-w-7xl mx-auto px-6 pt-10 pb-14 lg:pt-4 lg:pb-5 [@media(min-height:900px)]:lg:pt-3 [@media(min-height:900px)]:lg:pb-4">
+        <header className="mb-8 lg:mb-4 [@media(min-height:900px)]:lg:mb-3">
+          <h1 className="text-white text-3xl font-bold tracking-tight lg:text-[1.35rem] lg:leading-tight [@media(min-height:900px)]:lg:text-[1.3rem]">
             Техника для СВО
           </h1>
           <p className="text-zinc-500 text-sm mt-3 lg:mt-2 lg:text-xs [@media(min-height:900px)]:lg:mt-1.5">
@@ -37,29 +47,64 @@ export default function SvoPageClient({
           </p>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-x-4 lg:gap-y-3 [@media(min-height:900px)]:lg:gap-y-2.5">
+        <div
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-x-3 lg:gap-y-2.5 [@media(min-height:900px)]:lg:gap-y-2`}
+        >
           {products.map((product) => {
-            const title = svoDisplayTitle(product);
+            const label = svoTileAccessibleText(product);
+            const brand = product.brand?.trim() ?? "";
+            const model = product.model?.trim() ?? "";
+            const showSplit = Boolean(brand && model);
+
+            const imageShell = single
+              ? "relative min-h-[clamp(14rem,22vh,18rem)] lg:min-h-[clamp(17rem,min(32vh,22rem),22rem)] px-2 py-4 lg:py-5"
+              : "relative min-h-[clamp(14rem,22vh,18rem)] lg:min-h-[clamp(14rem,min(28vh,18rem),18rem)] px-2 py-4 lg:py-3 [@media(min-height:900px)]:lg:py-2.5";
+
             return (
               <Link
                 key={product.id}
                 href={`/svo/${product.slug}`}
-                aria-label={title}
-                className="group block rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+                aria-label={label}
+                className={`group block rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] ${
+                  single ? "lg:col-span-3" : ""
+                }`}
               >
-                <article className="h-full overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110">
-                  <div className="relative h-52 min-h-[13rem] px-2 py-4 lg:min-h-0 lg:h-[9rem] lg:py-3 [@media(min-height:900px)]:lg:h-[8.25rem]">
+                <article
+                  className={`h-full overflow-hidden transition duration-200 group-hover:opacity-90 group-hover:brightness-110 group-focus-visible:opacity-90 group-focus-visible:brightness-110 ${
+                    single ? "max-w-4xl mx-auto w-full" : ""
+                  }`}
+                >
+                  <div className={imageShell}>
                     <Image
                       src={product.image}
-                      alt={title}
+                      alt={label}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      sizes={
+                        single
+                          ? "(max-width: 1024px) 100vw, 56rem"
+                          : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      }
                       className="object-contain object-center"
                     />
                   </div>
-                  <div className="pt-1 pb-2">
-                    <p className="text-white text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] leading-snug line-clamp-2">
-                      {title}
+                  <div className="pt-1 pb-2 px-1">
+                    <p className="text-center text-white text-[11px] sm:text-xs tracking-[0.2em] leading-snug line-clamp-2">
+                      {showSplit ? (
+                        <>
+                          <span className="font-bold uppercase">{brand}</span>
+                          <span className="font-normal mx-0.5 normal-case">
+                            {" "}
+                            /{" "}
+                          </span>
+                          <span className="font-normal normal-case">
+                            {model}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-semibold uppercase">
+                          {svoDisplayTitle(product)}
+                        </span>
+                      )}
                     </p>
                   </div>
                 </article>
