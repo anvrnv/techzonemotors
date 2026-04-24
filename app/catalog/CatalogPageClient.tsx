@@ -97,7 +97,7 @@ function ProductModal({
                     onBuyClick();
                   }}
                 >
-                  Купить
+                  Подобрать технику
                 </button>
               </div>
             </div>
@@ -120,11 +120,9 @@ export default function CatalogPageClient({ products }: CatalogProductsProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-section">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-          Каталог товаров
-        </h1>
-        <p className="mb-10 text-sm text-foreground-muted">
+      <div className="page-shell section-block">
+        <h1 className="section-heading">Каталог товаров</h1>
+        <p className="section-intro mb-12 md:mb-14">
           {products.length} моделей питбайков в наличии
         </p>
 

@@ -151,12 +151,10 @@ export default function ReviewsGrid({ reviews }: ReviewsGridProps) {
   ];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 py-section">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">
-          Отзывы наших клиентов
-        </h2>
-        <p className="mt-2 text-base text-foreground-muted">
+    <section className="page-shell section-block">
+      <div className="mb-12 text-center md:mb-14">
+        <h2 className="section-heading">Отзывы наших клиентов</h2>
+        <p className="section-intro mx-auto mt-3">
           Что говорят о нас покупатели
         </p>
       </div>

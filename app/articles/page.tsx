@@ -17,11 +17,9 @@ export default async function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-section">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-          Статьи
-        </h1>
-        <p className="mb-10 text-sm text-foreground-muted">
+      <div className="page-shell section-block">
+        <h1 className="section-heading">Статьи</h1>
+        <p className="section-intro mb-12 md:mb-14">
           Полезные материалы и новости TechZone Motors
         </p>
 

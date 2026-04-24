@@ -6,7 +6,7 @@ import type { CatalogProductsProps } from "@/lib/catalog-product";
 
 type ProductCarouselProps = CatalogProductsProps & {
   onBuyClick?: () => void;
-  /** «Подробнее» — отдельно от «Купить» (например переход в каталог). */
+  /** «Подробнее» — отдельно от лида / заявки (например переход в каталог). */
   onDetailsClick?: () => void;
 };
 
@@ -37,12 +37,12 @@ export default function ProductCarousel({
   if (products.length === 0) {
     return (
       <section
-        className="w-full flex flex-col items-center justify-center px-6 text-center"
+        className="flex w-full flex-col items-center justify-center text-center"
         style={{ minHeight: "calc(100vh - 3.5rem)", padding: "2rem 0 1.5rem" }}
       >
-        <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground">
-          Наш каталог
-        </h2>
+        <div className="page-shell">
+          <h2 className="section-heading mb-4 text-center">Наш каталог</h2>
+        </div>
         <p className="max-w-md text-sm text-foreground-muted">
           Товары скоро появятся. Загляните позже или откройте раздел «Каталог» в
           меню.
@@ -69,12 +69,12 @@ export default function ProductCarousel({
 
   return (
     <section
-      className="flex w-full flex-col px-0"
+      className="flex w-full flex-col px-0 pb-10 md:pb-14"
       style={{ height: "calc(100vh - 3.5rem)", padding: "2rem 0 1.5rem" }}
     >
-      <h2 className="mb-6 flex-shrink-0 text-center text-3xl font-bold tracking-tight text-foreground">
-        Наш каталог
-      </h2>
+      <div className="page-shell mb-8 shrink-0 pt-1">
+        <h2 className="section-heading text-center">Наш каталог</h2>
+      </div>
 
       <div className="relative flex min-h-0 flex-1 items-center justify-center">
         <button
@@ -132,7 +132,7 @@ export default function ProductCarousel({
                     className={`${primaryBtn} whitespace-nowrap`}
                     onClick={onBuyClick}
                   >
-                    Купить
+                    Подобрать технику
                   </button>
                 </div>
               </div>

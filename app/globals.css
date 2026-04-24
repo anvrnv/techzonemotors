@@ -51,10 +51,10 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.6;
 
-  --y-section-sm: 2.5rem;
-  --y-section: 3.5rem;
-  --y-section-lg: 5rem;
-  --gap-section: 2.5rem;
+  --y-section-sm: 3rem;
+  --y-section: 4.5rem;
+  --y-section-lg: 6.5rem;
+  --gap-section: 3rem;
 }
 
 @theme inline {
@@ -120,4 +120,26 @@ body {
   color: var(--foreground);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
+}
+
+@layer components {
+  /** Centered content column (showroom max-width + horizontal padding). */
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /** Vertical rhythm for main page sections. */
+  .section-block {
+    @apply py-section;
+  }
+
+  /** Unified h1-style titles on list/marketing pages. */
+  .section-heading {
+    @apply text-3xl font-bold tracking-tight text-foreground md:text-4xl;
+  }
+
+  /** Subtitle under section headings. */
+  .section-intro {
+    @apply mt-2 max-w-2xl text-sm leading-relaxed text-foreground-muted md:text-base;
+  }
 }
