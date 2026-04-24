@@ -162,6 +162,7 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 |------|------|
 | `.cursor/rules/git-push-autodeploy.mdc` | Mandatory commit + push after meaningful edits |
 | `.cursor/rules/chronicler-doc-update.mdc` | After code changes, run Chronicler to update this chronicle |
+| `.cursor/rules/orchestrator-only.mdc` | When user explicitly requires **orchestrator**: delegate **only** via `Task` (`subagent_type: orchestrator`); on failure — stop and message user (no parent-agent fallback) |
 | `.cursor/agents/orchestrator.md` | Planner → Implementer → Debugger pipeline; should reference reading this doc first |
 | `.cursor/agents/planner.md` | Planning agent |
 | `.cursor/agents/implementer.md` | Implementation agent |
@@ -218,4 +219,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-24 — **Showroom layout + lead CTA:** **`app/globals.css`** — larger **section spacing** tokens, **`@layer components`** **`.page-shell`**, **`.section-block`**, **`.section-heading`**, **`.section-intro`**; **`Navbar`** — premium **`h-14`** glass header, centered desktop nav, site-wide lead CTA **«Подобрать технику»**, muted desktop phone, mobile phone icon + compact CTA + burger drawer. **`ProductCarousel`**, **`ReviewsGrid`**, **`Footer`**, **`CatalogPageClient`**, **articles** list/detail use shell/section utilities; catalog modal CTA **«Подобрать технику»**; article detail nests prose **`max-w-4xl`**. No route/data logic changes. **`/svo`** still dark. Prior **2026-04-12** SVO detail/list notes remain in directory rows above.*
+*Last updated: 2026-04-24 — **Cursor rule:** **`.cursor/rules/orchestrator-only.mdc`** (`alwaysApply`) — явный запрос «через оркестратор» ⇒ только `Task` orchestrator; при сбое — стоп и сообщение пользователю. Prior **Showroom layout + lead CTA:** **`app/globals.css`** — larger **section spacing** tokens, **`@layer components`** **`.page-shell`**, **`.section-block`**, **`.section-heading`**, **`.section-intro`**; **`Navbar`** — premium **`h-14`** glass header, centered desktop nav, site-wide lead CTA **«Подобрать технику»**, muted desktop phone, mobile phone icon + compact CTA + burger drawer. **`ProductCarousel`**, **`ReviewsGrid`**, **`Footer`**, **`CatalogPageClient`**, **articles** list/detail use shell/section utilities; catalog modal CTA **«Подобрать технику»**; article detail nests prose **`max-w-4xl`**. No route/data logic changes. **`/svo`** still dark. Prior **2026-04-12** SVO detail/list notes remain in directory rows above.*

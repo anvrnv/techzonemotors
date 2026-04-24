@@ -8,4 +8,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 После осмысленных правок в коде обновляй хронику через субагента Chronicler (см. **`.cursor/rules/chronicler-doc-update.mdc`** и **`.cursor/agents/chronicler.md`**).
 
+Если пользователь **явно** просит сделать задачу **через оркестратор** — см. **`.cursor/rules/orchestrator-only.mdc`** (только `Task` с оркестратором; при сбое не подменять вручную).
+
 Процесс: после правок кода — **коммит и `git push`** (см. `.cursor/rules/git-push-autodeploy.mdc`), иначе автодеплой с GitHub на сервер не запустится.
