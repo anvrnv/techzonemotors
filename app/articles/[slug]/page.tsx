@@ -41,21 +41,21 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   return (
-    <div className="bg-[#111111] min-h-screen">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-4xl px-6 py-section">
         <Link
           href="/articles"
-          className="inline-flex text-sm text-zinc-500 hover:text-orange-400 transition-colors mb-8"
+          className="mb-8 inline-flex text-sm text-foreground-subtle transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50"
         >
           ← Ко всем статьям
         </Link>
 
-        <header className="mb-10 pb-8 border-b border-white/10">
-          <h1 className="text-white text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+        <header className="mb-10 border-b border-border pb-8">
+          <h1 className="text-3xl leading-tight font-bold tracking-tight text-foreground md:text-4xl">
             {article.title}
           </h1>
           {article.excerpt ? (
-            <p className="text-zinc-400 text-base leading-relaxed mt-4">
+            <p className="mt-4 text-base leading-relaxed text-foreground-muted">
               {article.excerpt}
             </p>
           ) : null}

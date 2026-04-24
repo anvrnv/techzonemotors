@@ -16,6 +16,8 @@ This document is the **structural source of truth** for agents. After meaningful
 | DB | PostgreSQL via Prisma **7** with **`@prisma/adapter-pg`** (`lib/prisma.ts`) |
 | Integrations | Telegram Bot API for lead notifications (`app/api/contact/route.ts`) |
 
+**Design system (UI):** `app/globals.css` defines `:root` CSS variables and Tailwind v4 `@theme inline` tokens — warm background, terracotta accent, card/border/shadow/radius scales, typography rhythm. Site chrome and main surfaces (home, catalog, articles, `Navbar`, `Footer`, `ContactModal`, `ProductCarousel`, `ReviewsGrid`) use this **light** system. **`/svo` and `/svo/[slug]`** remain **dark** by design (`SvoPageShell`, hero `#0a0a0a`, etc.) for existing product imagery; do not assume SVO was restyled with the global light tokens.
+
 **Next.js note:** `AGENTS.md` states this may differ from older Next.js docs; prefer `node_modules/next/dist/docs/` when unsure.
 
 **Deploy:** Push to `main` triggers `.github/workflows/deploy.yml` (SSH → `git fetch` + `git reset --hard origin/main`, `npm install`, `npx prisma db push`, `npm run build`, `pm2 reload techzonemotors`). Server path `/var/www/techzonemotors`. See `docs/PROJECT_ADMIN.md` for secrets.
@@ -98,15 +100,15 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 | Path | Role |
 |------|------|
-| `app/layout.tsx` | Root layout: Montserrat font, `Navbar`, **`main`** **`flex min-h-0 flex-1 flex-col pt-14`** (fixed-navbar clearance; **`min-h-0`** lets flex descendants shrink and fill the viewport), `GlobalContactModal`; metadata "TechZone Motors" |
-| `app/globals.css` | Global styles / Tailwind entry |
+| `app/layout.tsx` | Root layout: Montserrat font, `body` **`bg-background text-foreground`** (token-driven light chrome), `Navbar`, **`main`** **`flex min-h-0 flex-1 flex-col pt-14`** (fixed-navbar clearance; **`min-h-0`** lets flex descendants shrink and fill the viewport), `GlobalContactModal`; metadata "TechZone Motors" |
+| `app/globals.css` | Tailwind v4 entry + global styles; **design tokens** in `:root` and **`@theme inline`** (warm background, terracotta accent, cards, borders, shadows, radii, type rhythm); no `prefers-color-scheme` theme flip — light showroom is default for non-SVO surfaces |
 | `app/page.tsx` | Home server page: `revalidate = 60`, `Promise.all` of `getHomeCarouselProducts()` (`lib/home-carousel.ts`) and `getReviewsForGrid()` (`lib/reviews.ts`), passes `products` + `reviews` to `HomeClient` |
-| `app/HomeClient.tsx` | Client home: `HomeClientProps` = `CatalogProductsProps` & `{ reviews: (ReviewData \| null)[] }`; dark layout, `ProductCarousel` with `onDetailsClick` → `router.push("/catalog")` («Подробнее») and `onBuyClick` → contact modal (`dispatchOpenContactModal`), `ReviewsGrid` (12-slot grid from `reviews`), `Footer` |
+| `app/HomeClient.tsx` | Client home: `HomeClientProps` = `CatalogProductsProps` & `{ reviews: (ReviewData \| null)[] }`; **light** layout (`bg-background` + shared tokens), `ProductCarousel` with `onDetailsClick` → `router.push("/catalog")` («Подробнее») and `onBuyClick` → contact modal (`dispatchOpenContactModal`), `ReviewsGrid` (12-slot grid from `reviews`), `Footer` |
 | `app/catalog/page.tsx` | Catalog server page |
-| `app/catalog/CatalogPageClient.tsx` | Client catalog UI; `ProductModal`: `aspect-[3/2]` hero + bottom gradient overlay (same pattern as home carousel), `max-h-[90vh] overflow-y-auto`; `role="dialog"`, `aria-modal`, `aria-labelledby`, Escape closes |
-| `app/articles/page.tsx` | Articles list: `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
-| `app/articles/[slug]/page.tsx` | Article detail: `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
-| `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` |
+| `app/catalog/CatalogPageClient.tsx` | Client catalog UI (**light** surfaces / modal, terracotta CTAs, borders/shadows aligned with `globals.css` tokens); `ProductModal`: `aspect-[3/2]` hero + bottom gradient overlay (same pattern as home carousel), `max-h-[90vh] overflow-y-auto`; `role="dialog"`, `aria-modal`, `aria-labelledby`, Escape closes |
+| `app/articles/page.tsx` | Articles list (**light** list chrome): `metadata` (title/description), `revalidate = 60`, `getArticlesList()` |
+| `app/articles/[slug]/page.tsx` | Article detail (**light** detail chrome): `revalidate = 60`, `generateStaticParams` from `getArticleSlugs()`, `generateMetadata` from excerpt, `getArticleBySlug()` |
+| `app/articles/ArticleBody.tsx` | Renders article `body` with `@portabletext/react` (**light** article typography/surfaces) |
 | `app/svo/page.tsx` | Server page: `revalidate = 60`, `getSvoCatalogProducts()`, wrapper **`div`** **`flex min-h-0 flex-1 flex-col`**, then `SvoPageClient` (server component) |
 | `app/svo/[slug]/page.tsx` | SVO detail: `generateStaticParams` from `getSvoCatalogProducts()`, `generateMetadata` / `notFound` via `getSvoProductBySlug`, `revalidate = 60`; `SvoPageShell`; inner column **`max-w-7xl` below `lg`**, **`lg:mx-0 lg:max-w-none lg:px-8 xl:px-12`**; **`flex flex-1 flex-col`** wrapper: **`lg` two-column grid** with **`lg:items-stretch`** — `SvoDetailHero` left, right column **`lg:flex-1`** + optional description + **`lg:mt-auto`** (**`SvoPriceBlock`**, **`SvoDetailCta`**); **`#svo-specs`** **`mt-auto`** (row at bottom of column when specs exist); **`SvoDetailHeader`** **`product`** + **`svoTileAccessibleText`** for hero **alt**; **`SvoSpecsRow`** when any CMS spec is set |
 | `app/svo/SvoDetailHeader.tsx` | Detail top bar: back link, centered **`h1`** with same **brand / model** split as list tiles but **larger** (**`text-sm sm:text-base`**, **`uppercase`**, **`tracking-[0.2em]`**, **`line-clamp-2`**), **`aria-label`** via **`svoTileAccessibleText()`**; **«Ещё данные»** skip link to `#svo-specs` when specs exist |
@@ -119,11 +121,11 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 | `app/api/contact/route.ts` | `POST` JSON `{ name, phone }` → Telegram `sendMessage` → `prisma.lead.create` |
 | `app/studio/[[...tool]]/layout.tsx` | Layout wrapper for Studio route |
 | `app/studio/[[...tool]]/page.tsx` | Client: если нет `NEXT_PUBLIC_SANITY_PROJECT_ID` в билде — подсказка; иначе `NextStudio` + `sanity.config` |
-| `app/components/Navbar.tsx` | Site navigation; center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
-| `app/components/Footer.tsx` | Footer |
-| `app/components/ProductCarousel.tsx` | Home carousel: large cards `aspect-[3/2]`, full-bleed `object-cover` image, bottom gradient overlay (title, excerpt, price, actions); fade/slide timer cleared on unmount; optional `onDetailsClick` for «Подробнее» (separate from «Купить» / buy handler) |
-| `app/components/ReviewsGrid.tsx` | **12**-cell grid (`md:grid-cols-10`, rows 3+3+4 / 4+3+3 ×2); prop `reviews` padded to 12; stars from `ratingTen / 2` with half-star SVG (`useId` clip paths), `role="img"` + `aria-label`; empty slots = shell + outline stars only (`"use client"`) |
-| `app/components/ContactModal.tsx` | Contact form modal UI |
+| `app/components/Navbar.tsx` | Site navigation (**light** header, terracotta primary CTAs); center + mobile nav link **Статьи** → `/articles` (replaces prior «Связаться» CTA placement there) |
+| `app/components/Footer.tsx` | Footer (**light** showroom styling, borders/shadows) |
+| `app/components/ProductCarousel.tsx` | Home carousel (**light** cards): large cards `aspect-[3/2]`, full-bleed `object-cover` image, bottom gradient overlay (title, excerpt, price, actions); fade/slide timer cleared on unmount; optional `onDetailsClick` for «Подробнее» (separate from «Купить» / buy handler) |
+| `app/components/ReviewsGrid.tsx` | **12**-cell grid (`md:grid-cols-10`, rows 3+3+4 / 4+3+3 ×2); prop `reviews` padded to 12; stars from `ratingTen / 2` with half-star SVG (`useId` clip paths), `role="img"` + `aria-label`; empty slots = shell + outline stars only (`"use client"`); **light** grid cells |
+| `app/components/ContactModal.tsx` | Contact form modal UI (**light** modal, terracotta submit) |
 | `app/components/GlobalContactModal.tsx` | Global modal + event listener for `OPEN_CONTACT_MODAL_EVENT` |
 
 ### Public assets (`public/`)
@@ -216,4 +218,4 @@ CLI scripts require `.env.local` to exist (`scripts/bootstrap-env.ts` exits if m
 
 ---
 
-*Last updated: 2026-04-12 — **SVO detail (second pass + tweaks):** **`svoDisplayTitle()`** uses **` / `** (tabs/OG). Detail **`#svo-specs`** **`mt-auto`** + larger **`SvoSpecsRow`** type; **`SvoPriceBlock`** white **uppercase** title-style (no orange), single visible price (**discount else regular**). **`SvoDetailHeader`:** brand **`/`** model, larger than tiles. **`SvoDetailHero`:** **«ДЛИНА»/«ВЫСОТА»** + Sanity value, gradient rails. Earlier second pass: full-width shell, **`lg:items-stretch`**, no specs top border. **SVO list:** **`data-svo-measure`**, **`lg:grid-cols-3`**. **SVO images:** `docs/PROJECT_ADMIN.md` **Изображения СВО**.*
+*Last updated: 2026-04-24 — **Light premium UI (site chrome):** centralized tokens in **`app/globals.css`** (`:root` + `@theme inline`); **`app/layout.tsx`** `body` **`bg-background text-foreground`**; home, catalog, articles, and shared components (**`HomeClient`**, **`CatalogPageClient`**, article routes, **`Navbar`**, **`Footer`**, **`ContactModal`**, **`ProductCarousel`**, **`ReviewsGrid`**) use **light** showroom styling with terracotta accents; **`prefers-color-scheme`** dark flip removed. **`/svo`** unchanged (still dark per product-imagery notes). Prior **2026-04-12** SVO detail/list notes remain in rows above.*

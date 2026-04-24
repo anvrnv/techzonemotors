@@ -29,8 +29,6 @@ function clampStarsDisplay(ratingTen: number): number {
   return Math.min(5, Math.max(0, v));
 }
 
-const EMPTY_STAR_STROKE = "rgb(161 161 170)"; /* zinc-400 */
-
 function StarIcon({
   mode,
   clipId,
@@ -41,7 +39,6 @@ function StarIcon({
   clipId: string;
   className?: string;
 }) {
-  const fill = "currentColor";
   if (mode === "full") {
     return (
       <svg
@@ -51,14 +48,14 @@ function StarIcon({
         height={20}
         aria-hidden
       >
-        <path d={STAR_PATH} fill={fill} />
+        <path d={STAR_PATH} fill="currentColor" />
       </svg>
     );
   }
   if (mode === "half") {
     return (
       <svg
-        className={className}
+        className={`text-foreground-subtle ${className ?? ""}`}
         viewBox="0 0 24 24"
         width={20}
         height={20}
@@ -72,16 +69,21 @@ function StarIcon({
         <path
           d={STAR_PATH}
           fill="none"
-          stroke={EMPTY_STAR_STROKE}
+          stroke="currentColor"
           strokeWidth={1.2}
         />
-        <path d={STAR_PATH} fill={fill} clipPath={`url(#${clipId})`} />
+        <path
+          d={STAR_PATH}
+          className="text-accent"
+          fill="currentColor"
+          clipPath={`url(#${clipId})`}
+        />
       </svg>
     );
   }
   return (
     <svg
-      className={className}
+      className={`text-foreground-subtle ${className ?? ""}`}
       viewBox="0 0 24 24"
       width={20}
       height={20}
@@ -90,7 +92,7 @@ function StarIcon({
       <path
         d={STAR_PATH}
         fill="none"
-        stroke={EMPTY_STAR_STROKE}
+        stroke="currentColor"
         strokeWidth={1.2}
       />
     </svg>
@@ -121,7 +123,7 @@ function StarRatingRow({
   }
   return (
     <div
-      className="flex gap-0.5 text-amber-400 shrink-0"
+      className="flex shrink-0 gap-0.5 text-accent"
       role="img"
       aria-label={label}
     >
@@ -149,12 +151,12 @@ export default function ReviewsGrid({ reviews }: ReviewsGridProps) {
   ];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 py-16">
+    <section className="w-full max-w-7xl mx-auto px-6 py-section">
       <div className="text-center mb-10">
-        <h2 className="text-white text-3xl font-bold tracking-tight">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
           Отзывы наших клиентов
         </h2>
-        <p className="text-zinc-400 mt-2 text-base">
+        <p className="mt-2 text-base text-foreground-muted">
           Что говорят о нас покупатели
         </p>
       </div>
@@ -162,7 +164,7 @@ export default function ReviewsGrid({ reviews }: ReviewsGridProps) {
       <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
         {slots.map((review, index) => {
           const colSpan = MD_COL_SPANS[index] ?? "md:col-span-3";
-          const shellClass = `${colSpan} bg-zinc-800/60 border border-white/10 rounded-2xl p-5 md:p-6 flex flex-col gap-3 min-h-[140px]`;
+          const shellClass = `${colSpan} flex min-h-[140px] flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-card md:p-6`;
 
           if (!review) {
             return (
@@ -194,12 +196,12 @@ export default function ReviewsGrid({ reviews }: ReviewsGridProps) {
               className={shellClass}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-white font-semibold">
+                <span className="font-semibold text-foreground">
                   {review.authorName}
                 </span>
                 <StarRatingRow starsDisplay={starsDisplay} label={label} />
               </div>
-              <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm leading-relaxed text-foreground-muted whitespace-pre-wrap">
                 {review.text}
               </p>
             </div>

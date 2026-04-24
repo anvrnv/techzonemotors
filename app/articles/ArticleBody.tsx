@@ -5,32 +5,35 @@ import { PortableText, type PortableTextComponents } from "@portabletext/react";
 
 import { urlForImage } from "@/lib/sanity/image";
 
+const linkMark =
+  "text-accent underline underline-offset-2 transition-colors hover:text-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50";
+
 const components: PortableTextComponents = {
   block: {
     h2: ({ children }) => (
-      <h2 className="text-white text-2xl font-bold tracking-tight mt-10 mb-4 first:mt-0">
+      <h2 className="mb-4 mt-10 text-2xl font-bold tracking-tight text-foreground first:mt-0">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-white text-xl font-semibold mt-8 mb-3 first:mt-0">
+      <h3 className="mt-8 mb-3 text-xl font-semibold text-foreground first:mt-0">
         {children}
       </h3>
     ),
     normal: ({ children }) => (
-      <p className="text-zinc-300 text-[15px] leading-relaxed mb-4 last:mb-0">
+      <p className="mb-4 text-[15px] leading-relaxed text-foreground-muted last:mb-0">
         {children}
       </p>
     ),
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="list-disc list-inside text-zinc-300 text-[15px] leading-relaxed space-y-2 mb-4 pl-1 marker:text-zinc-500">
+      <ul className="mb-4 list-inside list-disc space-y-2 pl-1 text-[15px] leading-relaxed text-foreground-muted marker:text-foreground-subtle">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="list-decimal list-inside text-zinc-300 text-[15px] leading-relaxed space-y-2 mb-4 pl-1 marker:text-zinc-500">
+      <ol className="mb-4 list-inside list-decimal space-y-2 pl-1 text-[15px] leading-relaxed text-foreground-muted marker:text-foreground-subtle">
         {children}
       </ol>
     ),
@@ -41,15 +44,17 @@ const components: PortableTextComponents = {
   },
   marks: {
     strong: ({ children }) => (
-      <strong className="font-semibold text-white">{children}</strong>
+      <strong className="font-semibold text-foreground">{children}</strong>
     ),
-    em: ({ children }) => <em className="italic text-zinc-200">{children}</em>,
+    em: ({ children }) => (
+      <em className="text-foreground-muted italic">{children}</em>
+    ),
     link: ({ value, children }) => {
       const href = typeof value?.href === "string" ? value.href : "#";
       return (
         <a
           href={href}
-          className="text-orange-400 underline underline-offset-2 hover:text-orange-300 transition-colors"
+          className={linkMark}
           rel="noopener noreferrer"
           target={href.startsWith("http") ? "_blank" : undefined}
         >
@@ -74,7 +79,7 @@ const components: PortableTextComponents = {
           <img
             src={src}
             alt={alt}
-            className="w-full rounded-xl border border-white/10 object-cover"
+            className="w-full rounded-xl border border-border object-cover"
           />
         </figure>
       );

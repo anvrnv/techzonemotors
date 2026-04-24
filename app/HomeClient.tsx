@@ -18,7 +18,7 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
   const openModal = () => dispatchOpenContactModal();
 
   return (
-    <div className="bg-[#111111] flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col bg-background">
       <ProductCarousel
         products={products}
         onBuyClick={openModal}
