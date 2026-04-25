@@ -11,6 +11,9 @@ const primaryBtn =
 const secondaryBtnOnPhoto =
   "inline-flex items-center justify-center min-h-[44px] rounded-full border border-white/35 bg-white/0 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50";
 
+const catalogCardShell =
+  "group flex min-h-[300px] flex-col overflow-hidden rounded-[length:var(--r-showroom)] border border-border/80 bg-card text-left shadow-[var(--s-showroom-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-border-strong hover:bg-card-raised hover:shadow-[var(--s-showroom-card-hover)] focus-within:ring-2 focus-within:ring-ring/40 focus-within:ring-offset-2 focus-within:ring-offset-background";
+
 function ProductModal({
   product,
   onClose,
@@ -59,11 +62,17 @@ function ProductModal({
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl shadow-elevated">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="absolute inset-0 z-0 h-full w-full object-cover brightness-110"
+        <div className="catalog-showroom-stage relative w-full aspect-[3/2] overflow-hidden rounded-[length:var(--r-showroom)] shadow-elevated">
+          <div className="absolute inset-0 z-[2] flex items-center justify-center px-5 pt-5 pb-[7.25rem] md:px-8 md:pt-8 md:pb-40">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="catalog-showroom-product-shadow relative z-[2] max-h-full max-w-full object-contain brightness-[0.96] contrast-[1.06]"
+            />
+          </div>
+          <div
+            className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-t from-black/35 via-transparent to-black/12"
+            aria-hidden
           />
           <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-6 pt-16 pb-5 md:px-8 md:pt-20 md:pb-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -128,31 +137,52 @@ export default function CatalogPageClient({ products }: CatalogProductsProps) {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <button
-              key={product.id}
-              onClick={() => openModal(product)}
-              className="group text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none rounded-xl border border-border bg-card shadow-card overflow-hidden hover:border-border-strong hover:bg-card-raised hover:shadow-elevated hover:scale-[1.02] active:scale-[0.99]"
-            >
-              <div className="h-44 overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover transition-all duration-200 group-hover:brightness-110"
+            <article key={product.id} className={catalogCardShell}>
+              <div className="catalog-showroom-stage relative flex min-h-0 flex-[7] basis-0 flex-col">
+                <div className="relative z-[2] flex min-h-[150px] flex-1 items-center justify-center px-3 pb-[4.5rem] pt-3 sm:min-h-[160px] sm:px-4 sm:pb-[4.75rem] sm:pt-4">
+                  <img
+                    src={product.image}
+                    alt=""
+                    role="presentation"
+                    className="catalog-showroom-product-shadow relative z-[2] max-h-[min(11rem,46vw)] w-full max-w-full object-contain brightness-[0.96] contrast-[1.06] transition duration-300 group-hover:brightness-[1] sm:max-h-[13rem]"
+                  />
+                </div>
+                <div
+                  className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-t from-black/48 via-black/12 to-black/18"
+                  aria-hidden
                 />
+                <div className="absolute inset-x-0 bottom-0 z-[4] flex flex-col items-stretch gap-2 px-3 pb-2.5 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-2.5 sm:px-4 sm:pb-3">
+                  <button
+                    type="button"
+                    className={`${primaryBtn} w-full shrink-0 sm:w-auto`}
+                    onClick={() => {
+                      dispatchOpenContactModal();
+                    }}
+                  >
+                    Оставить заявку
+                  </button>
+                  <button
+                    type="button"
+                    className={`${secondaryBtnOnPhoto} shrink-0 self-center sm:self-auto`}
+                    onClick={() => {
+                      openModal(product);
+                    }}
+                  >
+                    Подробнее
+                  </button>
+                </div>
               </div>
 
-              <div className="flex flex-col gap-1.5 p-4">
-                <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-foreground">
+              <div className="flex min-h-0 flex-[3] basis-0 flex-col justify-center gap-1 border-t border-border-faint px-4 py-3.5">
+                <h3 className="line-clamp-2 text-base font-bold leading-snug text-foreground sm:text-lg">
                   {product.name}
                 </h3>
-                <p className="line-clamp-2 text-xs leading-relaxed text-foreground-subtle">
+                <p className="line-clamp-2 text-xs leading-relaxed text-foreground-subtle sm:text-sm">
                   {product.description}
                 </p>
-                <span className="mt-1 text-base font-bold text-accent">
-                  {product.price}
-                </span>
+                <span className="mt-0.5 text-lg font-bold text-accent sm:text-xl">{product.price}</span>
               </div>
-            </button>
+            </article>
           ))}
         </div>
       </div>
