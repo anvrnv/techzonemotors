@@ -55,6 +55,12 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     return () => el.removeEventListener("keydown", trapFocus);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!submitted || !isOpen || !dialogRef.current) return;
+    const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
+    items[0]?.focus();
+  }, [submitted, isOpen]);
+
   if (!isOpen) return null;
 
   const canSubmit = privacyChecked && consentChecked && name.trim().length > 0 && phone.trim().length > 0;
