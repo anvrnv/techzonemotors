@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import ReviewsGrid from "./components/ReviewsGrid";
 import Footer from "./components/Footer";
 import type { CatalogProductsProps } from "@/lib/catalog-product";
-import { DEFAULT_CATALOG_IMAGE_URL } from "@/lib/catalog-product";
 import type { ReviewData } from "@/lib/reviews";
 import { dispatchOpenContactModal } from "@/lib/contact-modal";
 
@@ -41,9 +40,15 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
   return (
     <div ref={containerRef} className="flex flex-col bg-background">
       {/* ── 1. Hero ─────────────────────────────────────────── */}
-      <div className="hero-container mx-4 mt-6 sm:mx-6 lg:mx-8">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-12">
+      <div
+        className="flex items-center"
+        style={{
+          background: "var(--hero-bg, #EEF4FF)",
+          minHeight: "calc(100dvh - 4rem)",
+        }}
+      >
+        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 md:py-0 lg:px-8">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-8">
             {/* Left: text + CTAs */}
             <div className="flex flex-1 flex-col gap-6">
               <div className="flex flex-col gap-3">
@@ -51,87 +56,30 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
                   Техника для активного отдыха
                 </h1>
                 <p className="text-base leading-relaxed text-[var(--color-text-secondary)] md:text-lg">
-                  Питбайки, эндуро и мотовездеходы — подберём под рост, опыт и
-                  бюджет
+                  Питбайки, эндуро и мотовездеходы — подберём под рост, опыт и бюджет
                 </p>
               </div>
 
               {/* Trust points */}
               <div className="flex flex-wrap gap-4">
                 <span className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                    className="shrink-0 text-[var(--color-primary)]"
-                  >
-                    <circle
-                      cx="8"
-                      cy="8"
-                      r="7"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M5 8l2 2 4-4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0 text-[var(--color-primary)]">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Техника в наличии
                 </span>
                 <span className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                    className="shrink-0 text-[var(--color-primary)]"
-                  >
-                    <path
-                      d="M13 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M5 6h6M5 9h4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0 text-[var(--color-primary)]">
+                    <path d="M13 2H3a1 1 0 00-1 1v8a1 1 0 001 1h4l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                   Консультация перед покупкой
                 </span>
                 <span className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                    className="shrink-0 text-[var(--color-primary)]"
-                  >
-                    <rect
-                      x="1"
-                      y="5"
-                      width="9"
-                      height="7"
-                      rx="1"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M10 7.5h3l2 2.75V12h-5V7.5z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0 text-[var(--color-primary)]">
+                    <rect x="1" y="5" width="9" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10 7.5h3l2 2.75V12h-5V7.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                     <circle cx="3.5" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
                     <circle cx="12" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
@@ -158,35 +106,13 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
               </div>
             </div>
 
-            {/* Right: hero image */}
-            <div
-              className="relative hidden w-full sm:block md:w-[45%] md:max-w-[500px] md:shrink-0"
-              style={{ aspectRatio: "4/3" }}
-            >
+            {/* Right: hero image — transparent PNG */}
+            <div className="hidden sm:flex md:w-[48%] md:shrink-0 md:items-end md:justify-center md:self-end">
               <img
-                src={products[0]?.image ?? DEFAULT_CATALOG_IMAGE_URL}
-                alt={products[0]?.name ?? "Техника"}
-                className="h-full w-full object-contain"
-                width={500}
-                height={375}
-              />
-              {/* Bottom fade — растворяет фото в фон hero */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
-                style={{
-                  background:
-                    "linear-gradient(to top, var(--hero-bg, #EEF4FF) 0%, transparent 100%)",
-                }}
-              />
-              {/* Right fade */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 w-1/6"
-                style={{
-                  background:
-                    "linear-gradient(to right, transparent, var(--hero-bg, #EEF4FF))",
-                }}
+                src="/hero-rider.png"
+                alt="Мотоциклист"
+                className="w-full max-w-[520px] object-contain drop-shadow-xl"
+                style={{ maxHeight: "calc(100dvh - 4.5rem)" }}
               />
             </div>
           </div>
