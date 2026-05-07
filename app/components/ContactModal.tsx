@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "./Toast";
 
 interface ContactModalProps {
@@ -8,11 +8,12 @@ interface ContactModalProps {
   onClose: () => void;
 }
 
-const secondaryOutline =
-  "border border-border bg-card text-foreground shadow-sm hover:bg-card-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50";
+const FOCUSABLE =
+  'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const { showToast } = useToast();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [privacyChecked, setPrivacyChecked] = useState(false);
@@ -22,6 +23,37 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !dialogRef.current) return;
+    const el = dialogRef.current;
+    const focusable = () => Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE));
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    el.addEventListener("keydown", trapFocus);
+    focusable()[0]?.focus();
+    return () => el.removeEventListener("keydown", trapFocus);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -87,7 +119,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <div className="modal-content-enter relative w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-floating sm:p-8">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Форма заявки" className="modal-content-enter relative w-full max-w-[560px] rounded-[24px] border border-border bg-card p-5 shadow-floating sm:p-8">
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -132,7 +164,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             <button
               onClick={handleClose}
               type="button"
-              className={`mt-6 inline-flex rounded-full px-6 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] ${secondaryOutline}`}
+              className="btn-secondary mt-6"
             >
               Закрыть
             </button>

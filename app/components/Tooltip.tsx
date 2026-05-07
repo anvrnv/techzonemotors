@@ -48,7 +48,14 @@ export default function Tooltip({
       {isVisible && (
         <span
           role="tooltip"
-          className={`absolute ${positionClasses[position]} z-[200] max-w-[220px] whitespace-nowrap rounded-lg bg-[#111827] px-2.5 py-1.5 text-xs text-white pointer-events-none`}
+          className={`absolute ${positionClasses[position]} z-[200] whitespace-nowrap pointer-events-none text-xs`}
+          style={{
+            maxWidth: 'var(--tooltip-max-width)',
+            borderRadius: 'var(--tooltip-radius)',
+            background: 'var(--tooltip-bg)',
+            color: 'var(--tooltip-text)',
+            padding: 'var(--tooltip-padding)',
+          }}
         >
           {content}
         </span>

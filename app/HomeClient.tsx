@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import ReviewsGrid from "./components/ReviewsGrid";
@@ -196,13 +197,18 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
                   <span className="text-lg font-bold text-accent">
                     {product.price}
                   </span>
-                  <button
-                    type="button"
-                    className="btn-primary mt-1 w-full"
-                    onClick={() => dispatchOpenContactModal()}
-                  >
-                    Оставить заявку
-                  </button>
+                  <div className="mt-1 flex gap-2">
+                    <button
+                      type="button"
+                      className="btn-primary flex-1"
+                      onClick={() => dispatchOpenContactModal()}
+                    >
+                      Оставить заявку
+                    </button>
+                    <Link href="/catalog" className="btn-secondary shrink-0">
+                      Подробнее
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}

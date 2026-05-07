@@ -11,11 +11,8 @@ const CTA_LABEL = "Подобрать технику";
 const linkClass =
   "rounded-lg px-3 py-1.5 text-[13px] font-medium tracking-wide text-foreground-muted transition-colors duration-[120ms] hover:bg-card-muted/80 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/35 whitespace-nowrap";
 
-const primaryBtnDesktop =
-  "inline-flex shrink-0 items-center justify-center rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all duration-[120ms] hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98]";
-
 const primaryBtnMobileBar =
-  "inline-flex min-h-9 max-w-[min(11rem,calc(100vw-8.5rem))] min-w-0 shrink items-center justify-center truncate rounded-full bg-primary px-2.5 py-1.5 text-[11px] font-semibold leading-tight text-primary-foreground shadow-sm transition-all duration-[120ms] hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98] sm:max-w-[13.5rem] sm:px-3 sm:text-xs";
+  "btn-primary min-h-[44px] max-w-[min(11rem,calc(100vw-8.5rem))] min-w-0 shrink truncate text-[11px] leading-tight sm:max-w-[13.5rem] sm:text-xs";
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -133,7 +130,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => dispatchOpenContactModal()}
-              className={`${primaryBtnDesktop} hidden md:inline-flex`}
+              className="btn-primary hidden md:inline-flex"
             >
               {CTA_LABEL}
             </button>
