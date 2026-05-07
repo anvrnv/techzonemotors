@@ -38,8 +38,8 @@ export default function Tooltip({
     <span
       ref={wrapperRef}
       className="relative inline-flex items-center"
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
+      onPointerEnter={(e) => { if (e.pointerType === 'touch') return; setIsVisible(true); }}
+      onPointerLeave={(e) => { if (e.pointerType === 'touch') return; setIsVisible(false); }}
       onFocus={() => setIsVisible(true)}
       onBlur={() => setIsVisible(false)}
       onClick={() => setIsVisible((v) => !v)}
