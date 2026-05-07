@@ -71,7 +71,7 @@ export default function Tabs({ tabs, activeId, onChange, className = "", idPrefi
               disabled={tab.disabled}
               tabIndex={isActive ? 0 : -1}
               onClick={() => !tab.disabled && onChange(tab.id)}
-              className="relative -mb-px px-4 py-2.5 text-sm font-medium transition-colors"
+              className="relative -mb-px min-h-[44px] px-4 py-2.5 text-sm font-medium transition-colors"
               style={{
                 borderBottom: isActive ? `2px solid var(--color-primary)` : '2px solid transparent',
                 color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',

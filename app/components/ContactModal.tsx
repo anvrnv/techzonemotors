@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "./Toast";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ const secondaryOutline =
   "border border-border bg-card text-foreground shadow-sm hover:bg-card-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50";
 
 export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
+  const { showToast } = useToast();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [privacyChecked, setPrivacyChecked] = useState(false);
@@ -52,11 +54,14 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       const data = await res.json();
       if (res.ok && data.ok === true) {
         setSubmitted(true);
+        showToast("Заявка принята! Свяжемся в течение 15 минут", "success");
       } else {
         setError(data.error || "Не удалось отправить заявку. Попробуйте позже.");
+        showToast("Не удалось отправить. Попробуйте позже.", "error");
       }
     } catch {
       setError("Не удалось отправить заявку. Попробуйте позже.");
+      showToast("Не удалось отправить. Попробуйте позже.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -77,12 +82,12 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-overlay-scrim p-4 backdrop-blur-[6px]"
+      className="modal-overlay-enter fixed inset-0 z-[100] flex items-center justify-center bg-overlay-scrim p-4 backdrop-blur-[6px]"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-floating">
+      <div className="modal-content-enter relative w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-floating sm:p-8">
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -233,9 +238,33 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             <button
               type="submit"
               disabled={!canSubmit || isLoading}
-              className="btn-primary w-full"
+              aria-disabled={isLoading}
+              className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Отправка..." : "Свяжитесь со мной"}
+              {isLoading ? (
+                <svg
+                  className="animate-spin h-5 w-5 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+              ) : (
+                "Свяжитесь со мной"
+              )}
             </button>
           </form>
         )}

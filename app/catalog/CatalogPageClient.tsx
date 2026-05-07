@@ -8,7 +8,7 @@ import Breadcrumbs from "@/app/components/Breadcrumbs";
 import Tabs from "@/app/components/Tabs";
 
 const catalogCardShell =
-  "group flex min-h-[300px] flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card text-left shadow-[var(--shadow-md)] transition-all duration-300 ease-out hover:-translate-y-[3px] hover:border-border-strong hover:bg-card-raised hover:shadow-[var(--shadow-lg)] focus-within:ring-2 focus-within:ring-ring/40 focus-within:ring-offset-2 focus-within:ring-offset-background";
+  "group flex min-h-[300px] flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card text-left shadow-[var(--shadow-md)] transition-all duration-[260ms] ease-out hover:-translate-y-[3px] hover:border-border-strong hover:bg-card-raised hover:shadow-[var(--shadow-lg)] focus-within:ring-2 focus-within:ring-ring/40 focus-within:ring-offset-2 focus-within:ring-offset-background";
 
 function ProductCardSkeleton() {
   return (
@@ -123,7 +123,7 @@ function ProductModal({
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-overlay-scrim-strong p-0 sm:items-center sm:p-4 md:p-8 backdrop-blur-[8px]"
+      className="modal-overlay-enter fixed inset-0 z-[90] flex items-end justify-center bg-overlay-scrim-strong p-0 sm:items-center sm:p-4 md:p-8 backdrop-blur-[8px]"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
@@ -133,7 +133,7 @@ function ProductModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative max-h-[95vh] w-full max-w-3xl overflow-y-auto overflow-x-hidden rounded-t-[24px] bg-card shadow-[var(--shadow-lg)] sm:rounded-[24px]"
+        className="modal-content-enter relative max-h-[90dvh] w-full max-w-3xl overflow-y-auto overflow-x-hidden rounded-t-[24px] bg-card shadow-[var(--shadow-lg)] sm:rounded-[24px]"
       >
         <button
           type="button"
@@ -344,7 +344,7 @@ export default function CatalogPageClient({ products }: CatalogProductsProps) {
                       src={product.image}
                       alt=""
                       role="presentation"
-                      className="catalog-showroom-product-shadow relative z-[2] max-h-[min(11rem,46vw)] w-full max-w-full object-contain brightness-[0.96] contrast-[1.06] transition duration-300 group-hover:brightness-[1] sm:max-h-[13rem]"
+                      className="catalog-showroom-product-shadow relative z-[2] max-h-[min(11rem,46vw)] w-full max-w-full object-contain brightness-[0.96] contrast-[1.06] transition duration-[260ms] group-hover:brightness-[1] sm:max-h-[13rem]"
                     />
                   </div>
                   <div
@@ -361,7 +361,7 @@ export default function CatalogPageClient({ products }: CatalogProductsProps) {
                     </button>
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center min-h-[44px] rounded-full border border-white/35 bg-white/0 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50 shrink-0 self-center sm:self-auto"
+                      className="inline-flex items-center justify-center min-h-[44px] rounded-full border border-white/35 bg-white/0 px-5 py-2.5 text-sm font-medium text-white transition-all duration-[180ms] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50 shrink-0 self-center sm:self-auto"
                       onClick={(e) => {
                         triggerRef.current = e.currentTarget;
                         openModal(product);

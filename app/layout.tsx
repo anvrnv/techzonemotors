@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import GlobalContactModal from "./components/GlobalContactModal";
+import { ToastProvider } from "./components/Toast";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -28,9 +29,11 @@ export default function RootLayout({
       <body
         className={`${montserrat.className} min-h-full flex flex-col bg-background text-foreground`}
       >
-        <Navbar />
-        <main className="flex min-h-0 flex-1 flex-col pt-[72px]">{children}</main>
-        <GlobalContactModal />
+        <ToastProvider>
+          <Navbar />
+          <main className="flex min-h-0 flex-1 flex-col pt-16 md:pt-[72px]">{children}</main>
+          <GlobalContactModal />
+        </ToastProvider>
       </body>
     </html>
   );

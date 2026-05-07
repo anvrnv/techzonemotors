@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import ReviewsGrid from "./components/ReviewsGrid";
@@ -15,9 +16,29 @@ type HomeClientProps = CatalogProductsProps & {
 
 export default function HomeClient({ products, reviews }: HomeClientProps) {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sections = containerRef.current?.querySelectorAll<HTMLElement>(".fade-in-section");
+    if (!sections || sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="flex flex-col bg-background">
+    <div ref={containerRef} className="flex flex-col bg-background">
       {/* ── 1. Hero ─────────────────────────────────────────── */}
       <div className="hero-container mx-4 mt-6 sm:mx-6 lg:mx-8">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14">
@@ -137,7 +158,7 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
             </div>
 
             {/* Right: hero image */}
-            <div className="product-media w-full md:w-[45%] md:max-w-[480px] md:shrink-0">
+            <div className="product-media hidden w-full sm:flex md:w-[45%] md:max-w-[480px] md:shrink-0">
               <img
                 src={products[0]?.image ?? DEFAULT_CATALOG_IMAGE_URL}
                 alt={products[0]?.name ?? "Техника"}
@@ -152,13 +173,13 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
 
       {/* ── 2. Popular Models ───────────────────────────────── */}
       {products.length > 0 && (
-        <div className="page-shell section-block">
+        <div className="fade-in-section page-shell section-block">
           <h2 className="section-heading mb-8">Популярные модели</h2>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {products.slice(0, 6).map((product) => (
               <article
                 key={product.id}
-                className="flex flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card shadow-[var(--shadow-sm)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[var(--shadow-md)]"
+                className="flex flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card shadow-[var(--shadow-sm)] transition-all duration-[260ms] hover:-translate-y-[3px] hover:shadow-[var(--shadow-md)]"
               >
                 <div className="product-media">
                   <img
@@ -199,7 +220,7 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
       )}
 
       {/* ── 3. Trust / Benefits ─────────────────────────────── */}
-      <div className="page-shell section-block">
+      <div className="fade-in-section page-shell section-block">
         <div
           className="rounded-[var(--r-xl)] bg-[var(--color-primary-soft)] px-6 py-10 md:px-10 md:py-12"
         >
@@ -381,10 +402,12 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
       </div>
 
       {/* ── 4. Reviews ──────────────────────────────────────── */}
-      <ReviewsGrid reviews={reviews} />
+      <div className="fade-in-section">
+        <ReviewsGrid reviews={reviews} />
+      </div>
 
       {/* ── 5. Final CTA ────────────────────────────────────── */}
-      <div className="page-shell section-block">
+      <div className="fade-in-section page-shell section-block">
         <div className="flex flex-col items-center gap-5 rounded-[var(--r-2xl)] bg-[var(--color-primary-soft)] px-6 py-12 text-center md:px-12">
           <h2 className="section-heading">Готовы выбрать технику?</h2>
           <p className="max-w-md text-base leading-relaxed text-[var(--color-text-secondary)]">

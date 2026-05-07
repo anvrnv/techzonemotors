@@ -23,7 +23,7 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Telegram"
-          className="text-foreground transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40"
+          className="flex h-10 w-10 items-center justify-center text-foreground transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40"
         >
           <svg
             className="fill-foreground"
@@ -40,7 +40,7 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp"
-          className="text-foreground transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40"
+          className="flex h-10 w-10 items-center justify-center text-foreground transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40"
         >
           <svg
             className="fill-foreground"

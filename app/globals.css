@@ -399,7 +399,7 @@ body {
     font-size: var(--btn-font-size);
     font-weight: var(--btn-font-weight);
     box-shadow: var(--shadow-xs);
-    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
@@ -429,7 +429,7 @@ body {
     color: var(--btn-ghost-text);
     font-size: var(--btn-font-size);
     font-weight: 500;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
+    transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
@@ -525,6 +525,25 @@ body {
     border-radius: var(--r-xl);
   }
 
+  /* ── Fade-in sections ───────────────────────────────── */
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+  .fade-in-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Modal open animations ───────────────────────────── */
+  .modal-overlay-enter {
+    animation: modal-overlay-in var(--transition-base) ease-out forwards;
+  }
+  .modal-content-enter {
+    animation: modal-content-in var(--transition-slow) ease-out forwards;
+  }
+
   /* ── Product media zone ──────────────────────────────── */
   .product-media {
     background: linear-gradient(180deg, #F8FAFC 0%, #EEF3F8 100%);
@@ -540,5 +559,41 @@ body {
     width: 92%;
     height: 92%;
     object-fit: contain;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-content-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

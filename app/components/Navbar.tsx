@@ -4,17 +4,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { dispatchOpenContactModal } from "@/lib/contact-modal";
+import Tooltip from "./Tooltip";
 
 const CTA_LABEL = "Подобрать технику";
 
 const linkClass =
-  "rounded-lg px-3 py-1.5 text-[13px] font-medium tracking-wide text-foreground-muted transition-colors duration-150 hover:bg-card-muted/80 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/35 whitespace-nowrap";
+  "rounded-lg px-3 py-1.5 text-[13px] font-medium tracking-wide text-foreground-muted transition-colors duration-[120ms] hover:bg-card-muted/80 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/35 whitespace-nowrap";
 
 const primaryBtnDesktop =
-  "inline-flex shrink-0 items-center justify-center rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all duration-150 hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98]";
+  "inline-flex shrink-0 items-center justify-center rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all duration-[120ms] hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98]";
 
 const primaryBtnMobileBar =
-  "inline-flex min-h-9 max-w-[min(11rem,calc(100vw-8.5rem))] min-w-0 shrink items-center justify-center truncate rounded-full bg-primary px-2.5 py-1.5 text-[11px] font-semibold leading-tight text-primary-foreground shadow-sm transition-all duration-150 hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98] sm:max-w-[13.5rem] sm:px-3 sm:text-xs";
+  "inline-flex min-h-9 max-w-[min(11rem,calc(100vw-8.5rem))] min-w-0 shrink items-center justify-center truncate rounded-full bg-primary px-2.5 py-1.5 text-[11px] font-semibold leading-tight text-primary-foreground shadow-sm transition-all duration-[120ms] hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/55 active:scale-[0.98] sm:max-w-[13.5rem] sm:px-3 sm:text-xs";
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -57,7 +58,7 @@ export default function Navbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#E2E8F0] bg-white/[0.88] text-foreground backdrop-blur-[16px] shadow-[0_4px_24px_-8px_rgba(15,23,20,0.08)]">
-        <nav className="relative mx-auto flex h-[72px] max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
+        <nav className="relative mx-auto flex h-16 max-w-7xl items-center gap-2 px-4 sm:gap-3 sm:px-6 md:h-[72px] lg:px-8">
           {/* Logo */}
           <Link
             href="/"
@@ -103,13 +104,15 @@ export default function Navbar() {
           {/* Right cluster: phone + CTA + burger */}
           <div className="ml-auto flex min-w-0 items-center justify-end gap-2 sm:gap-3 md:gap-4">
             {/* Mobile — icon phone */}
-            <a
-              href="tel:+79998414936"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card/90 text-foreground-subtle shadow-sm transition-colors hover:border-border-strong hover:text-foreground-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40 md:hidden"
-              aria-label="Позвонить: +7 (999) 841-49-36"
-            >
-              <PhoneIcon />
-            </a>
+            <Tooltip content="Позвонить: +7 (999) 841-49-36" position="bottom">
+              <a
+                href="tel:+79998414936"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card/90 text-foreground-subtle shadow-sm transition-colors hover:border-border-strong hover:text-foreground-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/40 md:hidden"
+                aria-label="Позвонить: +7 (999) 841-49-36"
+              >
+                <PhoneIcon />
+              </a>
+            </Tooltip>
 
             <button
               type="button"
@@ -144,13 +147,13 @@ export default function Navbar() {
               aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
             >
               <span
-                className={`block h-0.5 w-5 bg-foreground transition-all duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
+                className={`block h-0.5 w-5 bg-foreground transition-all duration-[180ms] ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
               />
               <span
-                className={`block h-0.5 w-5 bg-foreground transition-all duration-200 ${mobileOpen ? "opacity-0" : ""}`}
+                className={`block h-0.5 w-5 bg-foreground transition-all duration-[180ms] ${mobileOpen ? "opacity-0" : ""}`}
               />
               <span
-                className={`block h-0.5 w-5 bg-foreground transition-all duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
+                className={`block h-0.5 w-5 bg-foreground transition-all duration-[180ms] ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
               />
             </button>
           </div>
@@ -178,7 +181,7 @@ export default function Navbar() {
         ].join(" ")}
       >
         {/* Drawer header */}
-        <div className="flex h-[72px] shrink-0 items-center justify-between border-b border-[#E2E8F0] px-5">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#E2E8F0] px-5">
           <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--color-text)' }}>Меню</span>
           <button
             type="button"
