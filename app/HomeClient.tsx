@@ -41,14 +41,14 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
     <div ref={containerRef} className="flex flex-col bg-background">
       {/* ── 1. Hero ─────────────────────────────────────────── */}
       <div
-        className="flex items-center"
+        className="flex items-start"
         style={{
           background: "var(--hero-bg, #EEF4FF)",
           minHeight: "calc(100dvh - 4rem)",
         }}
       >
-        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 md:py-0 lg:px-8">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-8">
+        <div className="mx-auto w-full max-w-7xl px-4 pt-12 pb-10 sm:px-6 md:pt-16 md:pb-0 lg:px-8">
+          <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-8">
             {/* Left: text + CTAs */}
             <div className="flex flex-1 flex-col gap-6">
               <div className="flex flex-col gap-3">
@@ -107,7 +107,7 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
             </div>
 
             {/* Right: hero image — transparent PNG */}
-            <div className="hidden sm:flex md:w-[48%] md:shrink-0 md:items-end md:justify-center md:self-end">
+            <div className="hidden sm:flex md:w-[48%] md:shrink-0 md:items-start md:justify-center md:self-start">
               <img
                 src="/hero-rider.png"
                 alt="Мотоциклист"
