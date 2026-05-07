@@ -20,7 +20,7 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
     <div className="flex flex-col bg-background">
       {/* ── 1. Hero ─────────────────────────────────────────── */}
       <div className="hero-container mx-4 mt-6 sm:mx-6 lg:mx-8">
-        <div className="page-shell section-block">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-12">
             {/* Left: text + CTAs */}
             <div className="flex flex-1 flex-col gap-6">
@@ -98,20 +98,20 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
                     <rect
                       x="1"
                       y="5"
-                      width="14"
-                      height="8"
+                      width="9"
+                      height="7"
                       rx="1"
                       stroke="currentColor"
                       strokeWidth="1.5"
                     />
                     <path
-                      d="M4 5V4a3 3 0 016 0v1"
+                      d="M10 7.5h3l2 2.75V12h-5V7.5z"
                       stroke="currentColor"
                       strokeWidth="1.5"
-                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
-                    <circle cx="5.5" cy="11.5" r="1.5" fill="currentColor" />
-                    <circle cx="10.5" cy="11.5" r="1.5" fill="currentColor" />
+                    <circle cx="3.5" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+                    <circle cx="12" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                   Доставка по России
                 </span>

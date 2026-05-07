@@ -13,10 +13,13 @@ interface TabsProps {
   activeId: string;
   onChange: (id: string) => void;
   className?: string;
+  /** External ID prefix so the caller can construct matching panel IDs. */
+  idPrefix?: string;
 }
 
-export default function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
-  const baseId = useId();
+export default function Tabs({ tabs, activeId, onChange, className = "", idPrefix }: TabsProps) {
+  const internalId = useId();
+  const baseId = idPrefix ?? internalId;
   const listRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

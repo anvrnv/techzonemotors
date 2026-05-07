@@ -13,11 +13,11 @@ const catalogCardShell =
 function ProductCardSkeleton() {
   return (
     <div className="flex min-h-[300px] flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card shadow-[var(--shadow-xs)] animate-pulse">
-      <div className="flex-[7] basis-0 bg-gray-200" />
+      <div className="flex-[7] basis-0 bg-[var(--color-border)]" />
       <div className="flex flex-[3] basis-0 flex-col gap-2 border-t border-border-faint px-4 py-3.5">
-        <div className="h-4 w-3/4 rounded bg-gray-200" />
-        <div className="h-3 w-full rounded bg-gray-100" />
-        <div className="h-5 w-1/3 rounded bg-gray-200 mt-1" />
+        <div className="h-4 w-3/4 rounded bg-[var(--color-border)]" />
+        <div className="h-3 w-full rounded bg-[var(--color-border-faint)]" />
+        <div className="h-5 w-1/3 rounded bg-[var(--color-border)] mt-1" />
       </div>
     </div>
   );
@@ -35,7 +35,14 @@ function ProductModal({
   triggerRef?: React.RefObject<HTMLElement | null>;
 }) {
   const titleId = useId();
+  const tabPanelBaseId = useId();
   const [activeTab, setActiveTab] = useState("description");
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  const FOCUSABLE =
+    'a[href]:not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), ' +
+    'input:not([disabled]):not([tabindex="-1"]), select:not([disabled]):not([tabindex="-1"]), ' +
+    'textarea:not([disabled]):not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])';
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -52,6 +59,38 @@ function ProductModal({
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
+
+  useEffect(() => {
+    const first = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE);
+    first?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const el = dialogRef.current;
+      if (!el) return;
+      const focusable = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", trapFocus);
+    return () => document.removeEventListener("keydown", trapFocus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleClose = () => {
     onClose();
@@ -89,28 +128,29 @@ function ProductModal({
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <button
-        type="button"
-        onClick={handleClose}
-        aria-label="Закрыть"
-        className="absolute top-4 right-4 z-[95] flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/80 bg-card/90 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-card-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/60"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path
-            d="M3 3L13 13M13 3L3 13"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
-
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         className="relative max-h-[95vh] w-full max-w-3xl overflow-y-auto overflow-x-hidden rounded-t-[24px] bg-card shadow-[var(--shadow-lg)] sm:rounded-[24px]"
       >
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Закрыть"
+          className="absolute top-4 right-4 z-[95] flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/80 bg-card/90 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-card-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/60"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path
+              d="M3 3L13 13M13 3L3 13"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+
         {/* Image zone */}
         <div className="catalog-showroom-stage relative aspect-[3/2] w-full overflow-hidden">
           <div className="absolute inset-0 z-[2] flex items-center justify-center px-8 py-8">
@@ -142,21 +182,55 @@ function ProductModal({
           </div>
 
           {/* Tabs */}
-          <Tabs tabs={tabs} activeId={activeTab} onChange={setActiveTab} />
-          <div className="min-h-[60px]">{tabContent[activeTab]}</div>
+          <Tabs tabs={tabs} activeId={activeTab} onChange={setActiveTab} idPrefix={tabPanelBaseId} />
+          <div
+            id={`${tabPanelBaseId}-panel-${activeTab}`}
+            role="tabpanel"
+            tabIndex={0}
+            aria-labelledby={`${tabPanelBaseId}-tab-${activeTab}`}
+            className="min-h-[60px]"
+          >
+            {tabContent[activeTab]}
+          </div>
 
           {/* Trust block */}
           <div className="flex flex-col gap-1.5 rounded-[var(--r-md)] bg-[var(--color-primary-soft)] px-4 py-3">
             {[
-              { icon: "✓", text: "Консультация бесплатна" },
-              { icon: "⏱", text: "Ответим в течение 15 минут" },
-              { icon: "🚚", text: "Доставка по России" },
+              {
+                icon: (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ),
+                text: "Консультация бесплатна",
+              },
+              {
+                icon: (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ),
+                text: "Ответим в течение 15 минут",
+              },
+              {
+                icon: (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <rect x="1" y="5" width="9" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10 7.5h3l2 2.75V12h-5V7.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <circle cx="3.5" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+                    <circle cx="12" cy="13" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                ),
+                text: "Доставка по России",
+              },
             ].map(({ icon, text }) => (
               <p
                 key={text}
                 className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]"
               >
-                <span className="text-[var(--color-primary)]">{icon}</span>
+                <span className="shrink-0 text-[var(--color-primary)]">{icon}</span>
                 {text}
               </p>
             ))}
@@ -314,9 +388,6 @@ export default function CatalogPageClient({ products }: CatalogProductsProps) {
           </div>
         )}
       </div>
-
-      {/* Skeleton export: defined but unused at runtime (products come from server) */}
-      {false && <ProductCardSkeleton />}
 
       {selected && (
         <ProductModal
