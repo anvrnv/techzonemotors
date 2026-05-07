@@ -12,7 +12,7 @@ const secondaryBtnOnPhoto =
   "inline-flex items-center justify-center min-h-[44px] rounded-full border border-white/35 bg-white/0 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50";
 
 const catalogCardShell =
-  "group flex min-h-[300px] flex-col overflow-hidden rounded-[length:var(--r-showroom)] border border-border/80 bg-card text-left shadow-[var(--s-showroom-card)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-border-strong hover:bg-card-raised hover:shadow-[var(--s-showroom-card-hover)] focus-within:ring-2 focus-within:ring-ring/40 focus-within:ring-offset-2 focus-within:ring-offset-background";
+  "group flex min-h-[300px] flex-col overflow-hidden rounded-[24px] border border-border/80 bg-card text-left shadow-[var(--shadow-md)] transition-all duration-300 ease-out hover:-translate-y-[3px] hover:border-border-strong hover:bg-card-raised hover:shadow-[var(--shadow-lg)] focus-within:ring-2 focus-within:ring-ring/40 focus-within:ring-offset-2 focus-within:ring-offset-background";
 
 function ProductModal({
   product,

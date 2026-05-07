@@ -7,8 +7,6 @@ interface ContactModalProps {
   onClose: () => void;
 }
 
-const primaryFill =
-  "bg-primary text-primary-foreground shadow-sm hover:bg-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/60";
 const secondaryOutline =
   "border border-border bg-card text-foreground shadow-sm hover:bg-card-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50";
 
@@ -19,6 +17,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [consentChecked, setConsentChecked] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -27,10 +27,16 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim()) {
-      setError("Пожалуйста, заполните все поля.");
-      return;
+    let hasError = false;
+    if (!name.trim()) {
+      setNameError("Пожалуйста, введите имя.");
+      hasError = true;
     }
+    if (!phone.trim()) {
+      setPhoneError("Пожалуйста, введите номер телефона.");
+      hasError = true;
+    }
+    if (hasError) return;
     if (!privacyChecked || !consentChecked) {
       setError("Необходимо принять оба согласия для отправки заявки.");
       return;
@@ -63,6 +69,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     setConsentChecked(false);
     setSubmitted(false);
     setError("");
+    setNameError("");
+    setPhoneError("");
     setIsLoading(false);
     onClose();
   };
@@ -93,14 +101,17 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
         {submitted ? (
           <div className="py-6 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-accent/30 bg-accent/10">
+            <div
+              className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+              style={{ background: 'var(--color-primary-soft)', border: '1px solid var(--color-primary)' }}
+            >
               <svg
-                className="text-accent"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 aria-hidden
+                style={{ color: 'var(--color-primary)' }}
               >
                 <path
                   d="M5 13L9 17L19 7"
@@ -128,62 +139,62 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </h2>
 
             <div className="mb-4">
+              <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+                Имя
+              </label>
               <input
+                id="contact-name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Имя"
-                className="w-full rounded-xl border border-border bg-card-raised px-4 py-3 text-sm text-foreground placeholder:text-foreground-subtle focus-visible:border-border-strong focus-visible:ring-2 focus-visible:ring-ring/25 focus:outline-none"
+                onChange={(e) => { setName(e.target.value); if (nameError) setNameError(""); }}
+                placeholder="Ваше имя"
+                aria-invalid={nameError ? "true" : undefined}
+                aria-describedby={nameError ? "contact-name-error" : undefined}
+                className="ui-input"
               />
+              {nameError && (
+                <p id="contact-name-error" role="alert" className="mt-1 text-xs" style={{ color: 'var(--color-error)' }}>
+                  {nameError}
+                </p>
+              )}
             </div>
 
             <div className="mb-6">
+              <label htmlFor="contact-phone" className="mb-1.5 block text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+                Телефон
+              </label>
               <input
+                id="contact-phone"
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Номер телефона"
-                className="w-full rounded-xl border border-border bg-card-raised px-4 py-3 text-sm text-foreground placeholder:text-foreground-subtle focus-visible:border-border-strong focus-visible:ring-2 focus-visible:ring-ring/25 focus:outline-none"
+                onChange={(e) => { setPhone(e.target.value); if (phoneError) setPhoneError(""); }}
+                placeholder="+7 (___) ___-__-__"
+                aria-invalid={phoneError ? "true" : undefined}
+                aria-describedby={phoneError ? "contact-phone-error" : undefined}
+                className="ui-input"
               />
+              {phoneError && (
+                <p id="contact-phone-error" role="alert" className="mt-1 text-xs" style={{ color: 'var(--color-error)' }}>
+                  {phoneError}
+                </p>
+              )}
             </div>
 
             <div className="mb-6 flex flex-col gap-3">
               <label className="group flex cursor-pointer items-start gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPrivacyChecked((v) => !v)}
-                  className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md border transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50 ${
-                    privacyChecked
-                      ? "border-primary bg-primary"
-                      : "border-border bg-transparent group-hover:border-border-strong"
-                  }`}
-                  aria-checked={privacyChecked}
-                  role="checkbox"
-                >
-                  {privacyChecked && (
-                    <svg
-                      className="text-primary-foreground"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      aria-hidden
-                    >
-                      <path
-                        d="M2 6L5 9L10 3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </button>
-                <span className="select-none text-sm leading-snug text-foreground-muted group-hover:text-foreground transition-colors">
+                <input
+                  type="checkbox"
+                  checked={privacyChecked}
+                  onChange={(e) => setPrivacyChecked(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded-md border"
+                  style={{ borderColor: 'var(--checkbox-border)', accentColor: 'var(--checkbox-checked-bg)' }}
+                />
+                <span className="select-none text-sm leading-snug transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                   Я согласен с{" "}
                   <a
                     href="/privacy"
-                    className="text-foreground underline underline-offset-2 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50"
+                    className="underline underline-offset-2 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50"
+                    style={{ color: 'var(--color-text)' }}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -193,41 +204,19 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               </label>
 
               <label className="group flex cursor-pointer items-start gap-3">
-                <button
-                  type="button"
-                  onClick={() => setConsentChecked((v) => !v)}
-                  className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md border transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50 ${
-                    consentChecked
-                      ? "border-primary bg-primary"
-                      : "border-border bg-transparent group-hover:border-border-strong"
-                  }`}
-                  aria-checked={consentChecked}
-                  role="checkbox"
-                >
-                  {consentChecked && (
-                    <svg
-                      className="text-primary-foreground"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      aria-hidden
-                    >
-                      <path
-                        d="M2 6L5 9L10 3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </button>
-                <span className="select-none text-sm leading-snug text-foreground-muted group-hover:text-foreground transition-colors">
+                <input
+                  type="checkbox"
+                  checked={consentChecked}
+                  onChange={(e) => setConsentChecked(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer rounded-md border"
+                  style={{ borderColor: 'var(--checkbox-border)', accentColor: 'var(--checkbox-checked-bg)' }}
+                />
+                <span className="select-none text-sm leading-snug transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                   Согласие на обработку{" "}
                   <a
                     href="/consent"
-                    className="text-foreground underline underline-offset-2 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50"
+                    className="underline underline-offset-2 transition-colors hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring/50"
+                    style={{ color: 'var(--color-text)' }}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -238,7 +227,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
 
             {error && (
-              <p className="mb-4 text-xs leading-snug text-red-600">{error}</p>
+              <p className="mb-4 text-xs leading-snug" style={{ color: 'var(--color-error)' }}>{error}</p>
             )}
 
             <button
@@ -246,7 +235,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               disabled={!canSubmit || isLoading}
               className={`w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 ${
                 canSubmit && !isLoading
-                  ? `cursor-pointer active:scale-[0.98] ${primaryFill}`
+                  ? "btn-primary cursor-pointer"
                   : "cursor-not-allowed bg-card-muted text-foreground-subtle"
               }`}
             >
