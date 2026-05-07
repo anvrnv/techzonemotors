@@ -91,11 +91,6 @@ export default function Navbar() {
                 Статьи
               </Link>
             </li>
-            <li>
-              <button type="button" onClick={() => dispatchOpenContactModal()} className={linkClass}>
-                Контакты
-              </button>
-            </li>
           </ul>
 
           {/* Right cluster: phone + CTA + burger */}
@@ -210,14 +205,6 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
-          <button
-            type="button"
-            onClick={() => { setMobileOpen(false); dispatchOpenContactModal(); }}
-            className="flex w-full items-center rounded-xl px-3 py-3.5 text-base font-medium transition-colors hover:bg-[#F1F5F9]"
-            style={{ color: 'var(--color-text)' }}
-          >
-            Контакты
-          </button>
         </nav>
 
         {/* Drawer footer */}

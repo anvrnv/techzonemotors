@@ -159,13 +159,34 @@ export default function HomeClient({ products, reviews }: HomeClientProps) {
             </div>
 
             {/* Right: hero image */}
-            <div className="product-media hidden w-full sm:flex md:w-[45%] md:max-w-[480px] md:shrink-0">
+            <div
+              className="relative hidden w-full sm:block md:w-[45%] md:max-w-[500px] md:shrink-0"
+              style={{ aspectRatio: "4/3" }}
+            >
               <img
                 src={products[0]?.image ?? DEFAULT_CATALOG_IMAGE_URL}
                 alt={products[0]?.name ?? "Техника"}
-                className="max-h-full max-w-full object-contain"
-                width={480}
-                height={360}
+                className="h-full w-full object-contain"
+                width={500}
+                height={375}
+              />
+              {/* Bottom fade — растворяет фото в фон hero */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
+                style={{
+                  background:
+                    "linear-gradient(to top, var(--hero-bg, #EEF4FF) 0%, transparent 100%)",
+                }}
+              />
+              {/* Right fade */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 right-0 w-1/6"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent, var(--hero-bg, #EEF4FF))",
+                }}
               />
             </div>
           </div>
