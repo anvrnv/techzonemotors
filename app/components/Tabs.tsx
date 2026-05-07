@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef } from "react";
 
 export interface TabItem {
   id: string;
@@ -17,14 +17,44 @@ interface TabsProps {
 
 export default function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
   const baseId = useId();
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const enabledTabs = tabs.filter((t) => !t.disabled);
+    const currentIndex = enabledTabs.findIndex((t) => t.id === activeId);
+
+    let nextIndex: number | null = null;
+
+    if (e.key === "ArrowRight") {
+      nextIndex = (currentIndex + 1) % enabledTabs.length;
+    } else if (e.key === "ArrowLeft") {
+      nextIndex = (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
+    } else if (e.key === "Home") {
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      nextIndex = enabledTabs.length - 1;
+    }
+
+    if (nextIndex !== null) {
+      e.preventDefault();
+      const nextTab = enabledTabs[nextIndex];
+      onChange(nextTab.id);
+      const btn = listRef.current?.querySelector<HTMLButtonElement>(
+        `#${CSS.escape(`${baseId}-tab-${nextTab.id}`)}`
+      );
+      btn?.focus();
+    }
+  };
 
   return (
     <div className={className}>
       <div
+        ref={listRef}
         role="tablist"
         aria-label="Вкладки"
         className="flex gap-0 border-b"
         style={{ borderColor: 'var(--color-border)' }}
+        onKeyDown={handleKeyDown}
       >
         {tabs.map((tab) => {
           const isActive = tab.id === activeId;

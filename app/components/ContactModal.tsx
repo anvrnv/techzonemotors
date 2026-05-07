@@ -233,11 +233,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             <button
               type="submit"
               disabled={!canSubmit || isLoading}
-              className={`w-full rounded-xl py-3 text-sm font-semibold transition-all duration-200 ${
-                canSubmit && !isLoading
-                  ? "btn-primary cursor-pointer"
-                  : "cursor-not-allowed bg-card-muted text-foreground-subtle"
-              }`}
+              className="btn-primary w-full"
             >
               {isLoading ? "Отправка..." : "Свяжитесь со мной"}
             </button>

@@ -208,16 +208,9 @@
   --color-primary-foreground: var(--accent-foreground);
   --color-muted-foreground: var(--foreground-muted);
 
-  /* New semantic tokens */
-  --color-error: var(--color-error);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-info: var(--color-info);
-  --color-surface: var(--color-surface);
-  --color-surface-soft: var(--color-surface-soft);
-  --color-text: var(--color-text);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-muted: var(--color-text-muted);
+  /* New semantic tokens — defined in :root above; referenced via var() directly in CSS.
+     Omitting self-referential @theme inline mappings (e.g. --color-error: var(--color-error))
+     that would create CSS circular-reference loops. */
 
   --font-sans: var(--font-montserrat), system-ui, sans-serif;
 
@@ -236,10 +229,9 @@
   --radius-showroom: var(--r-showroom);
 
   /* New shadow/spacing/font-size tokens */
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
+  /* --shadow-xs/sm/md/lg omitted: defined in :root, used as var() directly or via
+     arbitrary-value syntax (shadow-[var(--shadow-md)]). Self-referential @theme inline
+     mappings would override Tailwind's built-in shadow utilities with a circular ref. */
   --spacing-header: var(--header-height);
   --font-size-hero: var(--fs-hero);
   --font-size-h1: var(--fs-h1);
